@@ -89,7 +89,7 @@ public class UserAndNotesServiceImpl {
 
 
 
-        //Now we will save the noteentityES in the Elasticsearch db
+        //Now we will save the noteEntityES in the Elasticsearch db
         NoteEntityES noteEntityES = NoteEntityES.builder()
                 .note(note)
                 .ownerId(userEntity.getId())
