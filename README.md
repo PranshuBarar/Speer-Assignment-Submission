@@ -92,7 +92,7 @@ This project uses the following tech stack:
 ## Share Note: POST /api/notes/{noteId}/share
 * Share a note with another user for the authenticated user.
 
-## Search Notes: GET /api/search?q=<query>
+## Search Notes: GET /api/search?q=query
 * Search for notes based on keywords for the authenticated user.
 
 
