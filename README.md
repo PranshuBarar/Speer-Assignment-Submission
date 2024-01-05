@@ -1,8 +1,9 @@
 # Speer Assignment For Backend
 ## (This repository contains the backend code for the Assignment for position of Backend Developer)
 
-## Prerequisites
 ----------------
+## Prerequisites
+_________________________________________________
 
 Make sure you have the following tools installed on your machine:
 
