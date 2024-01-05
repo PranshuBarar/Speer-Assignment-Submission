@@ -48,23 +48,28 @@ Make sure you have the following tools installed on your machine:
 
 - You are most welcome to explore other available endpoints and functionalities as documented in the project.
 
-
+_________________________________________________
 # Tech Stack
+_________________________________________________
 This project uses the following tech stack:
 * Spring Boot
 * Hibernate
 * MySQL (For Database)
 * Elasticsearch (For Indexing)
 
+_________________________________________________
 # Project Structure
+_________________________________________________
 
 ## Application Structure
 ![imgonline-com-ua-twotoone-HTWW9MlcgzYnpss](https://github.com/PranshuBarar/Speer-Assignment-Submission/assets/117909106/23a64320-22ca-46b8-a94a-7ab865fe5117)
 
 ## MySQL Database Structure
 
-
+_________________________________________________
 # API Documentation
+_________________________________________________
+
 ## Overview
 * I've implemented a set of RESTful endpoints that facilitate various functionalities in the application.
 
