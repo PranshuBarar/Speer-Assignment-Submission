@@ -2,7 +2,7 @@
 ## (This repository contains the backend code for the Assignment for position of Backend Developer)
 
 _________________________________________________
-Instructions for Running this Project on your Computer
+## Instructions for Running this Project on your Computer
 _________________________________________________
 
 ## Prerequisites
