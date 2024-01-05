@@ -3,7 +3,7 @@ package com.example.speer.config;
 import com.example.speer.Entities.UserEntity;
 import com.example.speer.EntryDtos.UserEntryDto;
 import com.example.speer.Repository.UserRepository;
-import com.example.speer.Service.ServiceImpl.UserRegistrationService;
+import com.example.speer.Service.ServiceImpl.UserRegistrationServiceImpl;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
 public class JwtUserDetailsServiceImpl implements UserDetailsService {
 
     @Autowired
-    private UserRegistrationService userRegistrationService;
+    private UserRegistrationServiceImpl userRegistrationServiceImpl;
 
     @Autowired
     private UserRepository userRepository;
@@ -33,7 +33,7 @@ public class JwtUserDetailsServiceImpl implements UserDetailsService {
     }
 
     public UserEntity save(UserEntryDto userEntryDto) throws Exception {
-        return userRegistrationService.signup(userEntryDto);
+        return userRegistrationServiceImpl.signup(userEntryDto);
     }
 
 }

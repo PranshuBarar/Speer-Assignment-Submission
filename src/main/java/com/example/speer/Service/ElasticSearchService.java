@@ -5,5 +5,5 @@ import com.example.speer.utils.CustomQuery;
 import java.io.IOException;
 
 public interface ElasticSearchService {
-    public CustomQuery searchQuery(String lowerCase) throws IOException;
+    CustomQuery searchQuery(String lowerCase) throws IOException;
 }

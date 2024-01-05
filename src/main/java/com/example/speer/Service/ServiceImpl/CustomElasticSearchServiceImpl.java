@@ -1,7 +1,6 @@
 package com.example.speer.Service.ServiceImpl;
 
 import com.example.speer.Service.ElasticSearchService;
-import com.example.speer.Service.ServiceImpl.UserAndNotesService;
 import com.example.speer.utils.Constants;
 import com.example.speer.utils.CustomQuery;
 import com.example.speer.utils.HelperFunctions;
@@ -20,7 +19,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 
 @Service
-public class CustomElasticSearchService implements ElasticSearchService {
+public class CustomElasticSearchServiceImpl implements ElasticSearchService {
 
     @Value("${api.elasticsearch.uri}")
     private String elasticSearchUri;
@@ -29,11 +28,11 @@ public class CustomElasticSearchService implements ElasticSearchService {
     private String elasticSearchSearchPrefix;
 
     @Autowired
-    UserAndNotesService userAndNotesService;
+    UserAndNotesServiceImpl userAndNotesServiceImpl;
 
     @Override
     public CustomQuery searchQuery(String query) throws IOException {
-        int currentUserId = userAndNotesService.getCurrentUserId();
+        int currentUserId = userAndNotesServiceImpl.getCurrentUserId();
         String body = HelperFunctions.buildMultiIndexMatchBody(query,currentUserId);
         return executeHttpRequest(body);
     }

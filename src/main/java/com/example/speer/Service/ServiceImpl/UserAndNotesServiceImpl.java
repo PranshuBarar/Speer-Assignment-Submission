@@ -22,7 +22,7 @@ import java.util.Optional;
 import java.util.Set;
 
 @Service
-public class UserAndNotesService {
+public class UserAndNotesServiceImpl {
 
     @Autowired
     UserRepository userRepository;
@@ -154,9 +154,9 @@ public class UserAndNotesService {
 
             //Here we are updating the note in ElasticSearch as well
             int noteMySqlId = matchingNote.getId();
-//            NoteEntityES noteEntityES = noteRepositoryES.findByNoteMySqlId(noteMySqlId);
-//            noteEntityES.setNote(note);
-//            noteRepositoryES.save(noteEntityES);
+            NoteEntityES noteEntityES = noteRepositoryES.findByNoteMySqlId(noteMySqlId);
+            noteEntityES.setNote(note);
+            noteRepositoryES.save(noteEntityES);
 
 
             return "Note updated successfully";
@@ -178,7 +178,7 @@ public class UserAndNotesService {
             noteRepository.deleteById(noteId);
 
             //Here we are deleting the note in ElasticSearch as well
-//            noteRepositoryES.deleteByNoteMySqlId(noteId);
+            noteRepositoryES.deleteByNoteMySqlId(noteId);
 
 
             return "Note deleted successfully";
@@ -202,9 +202,9 @@ public class UserAndNotesService {
             noteRepository.save(matchingNote);
             userRepository.save(recipientUserEntity);
 
-////            NoteEntityES noteEntityES = noteRepositoryES.findByNoteMySqlId(noteId);
-//            noteEntityES.getSharedWithUsers().add(recipientId);
-//            noteRepositoryES.save(noteEntityES);
+            NoteEntityES noteEntityES = noteRepositoryES.findByNoteMySqlId(noteId);
+            noteEntityES.getSharedWithUsers().add(recipientId);
+            noteRepositoryES.save(noteEntityES);
 
             return "Note successfully shared";
         }

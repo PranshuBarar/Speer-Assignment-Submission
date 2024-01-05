@@ -4,11 +4,12 @@ import com.example.speer.Convertors.UserConvertor;
 import com.example.speer.Entities.UserEntity;
 import com.example.speer.EntryDtos.UserEntryDto;
 import com.example.speer.Repository.UserRepository;
+import com.example.speer.Service.UserRegistrationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class UserRegistrationService {
+public class UserRegistrationServiceImpl implements UserRegistrationService {
 
     @Autowired
     UserRepository userRepository;
