@@ -42,7 +42,7 @@ Make sure you have the following tools installed on your machine:
 
 - Customize your application configuration in the respective `application.properties` or `application.yml` files if you require to do so.
 
-- Feel free to explore other available endpoints and functionalities as documented in the project.
+- You are most welcome to explore other available endpoints and functionalities as documented in the project.
 
 
 # Tech Stack
