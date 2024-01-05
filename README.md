@@ -52,6 +52,10 @@ This project uses the following tech stack:
 * MySQL (For Database)
 * Elasticsearch (For Indexing)
 
+# Project Structure
+
+![imgonline-com-ua-twotoone-HTWW9MlcgzYnpss.jpg](..%2Fimgonline-com-ua-twotoone-HTWW9MlcgzYnpss.jpg)
+
 # API Documentation
 ## Overview
 * I've implemented a set of RESTful endpoints that facilitate various functionalities in the application.
