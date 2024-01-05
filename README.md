@@ -77,22 +77,22 @@ This project uses the following tech stack:
 ## Get All Notes: GET /api/notes
 * Retrieve a list of all notes for the authenticated user.
 
-## Get Note by ID: GET /api/notes/:id
+## Get Note by ID: GET /api/notes/{noteId}
 * Retrieve a specific note by ID for the authenticated user.
 
 ## Create New Note: POST /api/notes
 * Create a new note for the authenticated user.
 
-## Update Note by ID: PUT /api/notes/:id
+## Update Note by ID: PUT /api/notes/{noteId}
 * Update an existing note by ID for the authenticated user.
 
-##  Delete Note by ID: DELETE /api/notes/:id
+##  Delete Note by ID: DELETE /api/notes/{noteId}
 * Delete a note by ID for the authenticated user.
 
 ## Share Note: POST /api/notes/:id/share
 * Share a note with another user for the authenticated user.
 
-## Search Notes: GET /api/search?q=:query
+## Search Notes: GET /api/search?q=<query>
 * Search for notes based on keywords for the authenticated user.
 
 
