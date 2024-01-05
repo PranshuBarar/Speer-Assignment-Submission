@@ -53,8 +53,11 @@ This project uses the following tech stack:
 * Elasticsearch (For Indexing)
 
 # Project Structure
+
+## Application Structure
 ![imgonline-com-ua-twotoone-HTWW9MlcgzYnpss](https://github.com/PranshuBarar/Speer-Assignment-Submission/assets/117909106/23a64320-22ca-46b8-a94a-7ab865fe5117)
 
+## MySQL Database Structure
 
 
 # API Documentation
