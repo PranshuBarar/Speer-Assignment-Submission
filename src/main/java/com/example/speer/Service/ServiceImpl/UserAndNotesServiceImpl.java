@@ -220,7 +220,7 @@ public class UserAndNotesServiceImpl {
 
 
     //============================================================================================
-    //These are private methods which can be called only by the methods of this class
+    //These are helper methods for the above methods
     //============================================================================================
 
     public static NoteEntity getNoteEntity(int noteId, Optional<UserEntity> optionalUserEntity) {
