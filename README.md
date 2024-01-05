@@ -89,7 +89,7 @@ This project uses the following tech stack:
 ##  Delete Note by ID: DELETE /api/notes/{noteId}
 * Delete a note by ID for the authenticated user.
 
-## Share Note: POST /api/notes/:id/share
+## Share Note: POST /api/notes/{noteId}/share
 * Share a note with another user for the authenticated user.
 
 ## Search Notes: GET /api/search?q=<query>
