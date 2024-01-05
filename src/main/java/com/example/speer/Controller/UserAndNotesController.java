@@ -29,7 +29,7 @@ public class UserAndNotesController {
         return new ResponseEntity<>(userAndNotesServiceImpl.getNoteById(noteId),HttpStatus.OK);
     }
 
-    @PostMapping("/notes") //http://localhost:8080/api/notes/createNote
+    @PostMapping("/notes") //http://localhost:8080/api/notes
     public ResponseEntity<?> createNote(@RequestBody String note) throws Exception {
         return new ResponseEntity<>(userAndNotesServiceImpl.createNote(note),HttpStatus.OK);
     }

@@ -8,12 +8,15 @@ import com.example.speer.Repository.NoteRepository;
 import com.example.speer.Repository.UserRepository;
 import com.example.speer.config.CustomUserDetails;
 import jakarta.persistence.EntityNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.session.SessionAuthenticationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.naming.AuthenticationException;
 import java.util.ArrayList;
@@ -33,6 +36,8 @@ public class UserAndNotesServiceImpl {
     @Autowired
     NoteRepositoryES noteRepositoryES;
 
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserAndNotesServiceImpl.class);
 
     public String helloUser() throws AuthenticationException {
         int currentUserId = getCurrentUserId();
@@ -70,6 +75,7 @@ public class UserAndNotesServiceImpl {
         NoteEntity noteEntity = NoteEntity
                 .builder()
                 .note(note)
+                .userEntity(userEntity)
                 .build();
 
         //Here we will add this new note to the notelist of current authenticated user
@@ -120,7 +126,6 @@ public class UserAndNotesServiceImpl {
                     .findFirst()
                     .orElse(null);
 
-
             if (matchingNote == null) {
                 matchingNote = userEntity.getSharedNotes()
                         .stream()
@@ -132,11 +137,9 @@ public class UserAndNotesServiceImpl {
                 }
                 else return matchingNote;
             }
+            else return matchingNote;
         }
-        else {
-            throw new IllegalAccessException("You are not authenticated");
-        }
-        return null;
+        throw new IllegalAccessException("You are not authenticated");
     }
     public String updateNote(String note, int noteId) throws Exception {
         int currentUserId = getCurrentUserId();
@@ -164,6 +167,7 @@ public class UserAndNotesServiceImpl {
         throw new AccessDeniedException("You are not authorized");
     }
 
+    @Transactional
     public String deleteNote(int noteId) throws Exception {
         int currentUserId = getCurrentUserId();
         Optional<UserEntity> optionalUserEntity = userRepository.findById(currentUserId);
@@ -174,13 +178,28 @@ public class UserAndNotesServiceImpl {
                 throw new AccessDeniedException("You are not allowed to modify as you are not the owner of this note");
             }
 
+            UserEntity userEntity = optionalUserEntity.get();
+            userEntity.getSharedNotes().remove(matchingNote);
+
             //Here we are deleting the note in MySQL DB
-            noteRepository.deleteById(noteId);
+            try{
+                noteRepository.deleteById(matchingNote.getId());
+            } catch (Exception e) {
+                LOGGER.error("Error deleting note from MySQL", e);
+                throw new RuntimeException("Error deleting note from MySQL", e);
+            }
 
-            //Here we are deleting the note in ElasticSearch as well
-            noteRepositoryES.deleteByNoteMySqlId(noteId);
+            // Delete from Elasticsearch also
+            try {
+                noteRepositoryES.deleteByNoteMySqlId(matchingNote.getId());
+            } catch (Exception e) {
+                LOGGER.error("Error deleting note from Elasticsearch", e);
+                throw new RuntimeException("Error deleting note from Elasticsearch", e);
+            }
 
-
+            System.out.println(noteId);
+            System.out.println(matchingNote.getId());
+            System.out.println(matchingNote.getNote());
             return "Note deleted successfully";
         }
         throw new AccessDeniedException("You are not authorized");
@@ -188,19 +207,24 @@ public class UserAndNotesServiceImpl {
 
     public String shareNote(int noteId, int recipientId) throws Exception{
         int currentUserId = getCurrentUserId();
-        Optional<UserEntity> optionalUserEntity = userRepository.findById(currentUserId);
-        if(optionalUserEntity.isPresent()) {
-            NoteEntity matchingNote = getNoteEntity(noteId, optionalUserEntity);
+        Optional<UserEntity> optionalCurrentUserEntity = userRepository.findById(currentUserId);
+        Optional<UserEntity> optionalRecipientUserEntity = userRepository.findById(recipientId);
+        if(optionalRecipientUserEntity.isPresent() && optionalCurrentUserEntity.isPresent()) {
+            NoteEntity matchingNote = getNoteEntity(noteId, optionalRecipientUserEntity);
             if(matchingNote == null){
                 throw new AccessDeniedException("You are not allowed to share as you are not the owner of this note");
             }
 
-            UserEntity recipientUserEntity = userRepository.findById(recipientId).get();
+            UserEntity recipientUserEntity = optionalRecipientUserEntity.get();
             matchingNote.getSharedWithUsers().add(recipientUserEntity);
-            recipientUserEntity.getSharedNotes().add(matchingNote);
+
+            UserEntity currentUserEntity = optionalCurrentUserEntity.get();
+            currentUserEntity.getSharedNotes().add(matchingNote);
 
             noteRepository.save(matchingNote);
+
             userRepository.save(recipientUserEntity);
+            userRepository.save(currentUserEntity);
 
             NoteEntityES noteEntityES = noteRepositoryES.findByNoteMySqlId(noteId);
             noteEntityES.getSharedWithUsers().add(recipientId);
