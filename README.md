@@ -1,6 +1,50 @@
 # Speer Assignment For Backend 
 ## (This repository contains the backend code for the Assignment for position of Backend Developer)
 
+## Prerequisites
+
+Make sure you have the following tools installed on your machine:
+
+- [Docker](https://docs.docker.com/get-docker/)
+- [Docker Compose](https://docs.docker.com/compose/install/)
+
+## How to Run
+
+1. Clone the repository to your local machine:
+
+    ```bash
+    git clone https://github.com/PranshuBarar/Speer-Assignment-Submission.git
+    ```
+
+2. Navigate to the project directory:
+
+    ```bash
+    cd <respository_name_here>
+    ```
+
+3. Build the Docker image for your Spring Boot application:
+
+    ```bash
+    docker build -t speer-application-backend .
+    ```
+
+4. Run Docker Compose to start MySQL, Elasticsearch, and your Spring Boot application:
+
+    ```bash
+    docker-compose up
+    ```
+
+5. Access your application at [http://localhost:8080](http://localhost:8080)
+
+## Additional Notes
+
+- If you encounter any issues, ensure that ports 8080, 3306, and 9200 are available on your machine.
+
+- Customize your application configuration in the respective `application.properties` or `application.yml` files if you require to do so.
+
+- Feel free to explore other available endpoints and functionalities as documented in the project.
+
+
 # Tech Stack
 This project uses the following tech stack:
 * Spring Boot

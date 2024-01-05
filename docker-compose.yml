@@ -17,8 +17,8 @@ services:
     ports:
       - "9200:9200"
 
-  speer-application:
-    image: speer-application-v2
+  speer-application-backend:
+    image: speer-application-backend
     depends_on:
       - elasticsearch
       - mysql
