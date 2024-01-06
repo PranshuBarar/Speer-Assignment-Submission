@@ -49,7 +49,8 @@ public class CustomElasticSearchServiceImpl implements ElasticSearchService {
                 HttpResponse response = httpClient.execute(httpPost);
                 String message = EntityUtils.toString(response.getEntity());
                 JSONObject myObject = new JSONObject(message);
-                if(myObject.getJSONObject(Constants.HITS).getInt(Constants.TOTAL_HITS) != 0){
+                int totalHits = myObject.getJSONObject(Constants.HITS).getJSONObject(Constants.TOTAL_HITS).getInt("value");
+                if(totalHits != 0){
                     customQuery
                             .setElements(myObject
                                     .getJSONObject(Constants.HITS)
