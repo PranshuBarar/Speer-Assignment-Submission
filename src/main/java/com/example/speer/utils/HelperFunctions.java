@@ -10,12 +10,6 @@ public class HelperFunctions {
 
     private static final String SEARCH_FIELD = "note";
 
-//    /**
-//     * Construct the query body for multi index matching
-//     *
-//     * @param query String
-//     * @return String
-//     */
 
     public static String buildMultiIndexMatchBody(String query, int userId) {
         return "{\n" +
@@ -50,6 +44,9 @@ public class HelperFunctions {
                 "    \"require_field_match\": true\n" +
                 " }\n" +
                 "}";
+    }
+
+
 
 
     public static String buildSearchUri(String elasticSearchUri,
