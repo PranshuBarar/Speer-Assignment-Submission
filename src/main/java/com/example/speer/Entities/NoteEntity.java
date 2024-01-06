@@ -27,6 +27,6 @@ public class NoteEntity {
     @JoinColumn
     UserEntity userEntity;
 
-    @ManyToMany(mappedBy = "sharedNotes")
+    @ManyToMany(mappedBy = "sharedNotes", cascade = CascadeType.ALL)
     private Set<UserEntity> sharedWithUsers = new HashSet<>();
 }

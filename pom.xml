@@ -49,6 +49,7 @@
 		<dependency>
 			<groupId>com.mysql</groupId>
 			<artifactId>mysql-connector-j</artifactId>
+			<version>8.2.0</version>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
@@ -64,6 +65,7 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-elasticsearch</artifactId>
+<!--			<version></version>-->
 		</dependency>
 		<dependency>
 			<groupId>org.elasticsearch</groupId>

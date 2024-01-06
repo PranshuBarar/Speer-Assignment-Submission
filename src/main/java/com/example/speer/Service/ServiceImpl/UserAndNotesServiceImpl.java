@@ -3,7 +3,7 @@ package com.example.speer.Service.ServiceImpl;
 import com.example.speer.Entities.NoteEntity;
 import com.example.speer.Entities.NoteEntityES;
 import com.example.speer.Entities.UserEntity;
-import com.example.speer.Repository.NoteRepositoryES;
+import com.example.speer.Repository.ESRepo.NoteRepositoryES;
 import com.example.speer.Repository.NoteRepository;
 import com.example.speer.Repository.UserRepository;
 import com.example.speer.config.CustomUserDetails;
@@ -178,11 +178,13 @@ public class UserAndNotesServiceImpl {
                 throw new AccessDeniedException("You are not allowed to modify as you are not the owner of this note");
             }
 
-            UserEntity userEntity = optionalUserEntity.get();
-            userEntity.getSharedNotes().remove(matchingNote);
+            for(UserEntity user : matchingNote.getSharedWithUsers()){
+                user.getSharedNotes().remove(matchingNote);
+            }
 
             //Here we are deleting the note in MySQL DB
             try{
+                System.out.println("RadheKrishna");
                 noteRepository.deleteById(matchingNote.getId());
             } catch (Exception e) {
                 LOGGER.error("Error deleting note from MySQL", e);
@@ -216,15 +218,11 @@ public class UserAndNotesServiceImpl {
             }
 
             UserEntity recipientUserEntity = optionalRecipientUserEntity.get();
+            recipientUserEntity.getSharedNotes().add(matchingNote);
             matchingNote.getSharedWithUsers().add(recipientUserEntity);
 
-            UserEntity currentUserEntity = optionalCurrentUserEntity.get();
-            currentUserEntity.getSharedNotes().add(matchingNote);
-
             noteRepository.save(matchingNote);
-
             userRepository.save(recipientUserEntity);
-            userRepository.save(currentUserEntity);
 
             NoteEntityES noteEntityES = noteRepositoryES.findByNoteMySqlId(noteId);
             noteEntityES.getSharedWithUsers().add(recipientId);

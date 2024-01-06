@@ -26,16 +26,19 @@ Make sure you have the following tools installed on your machine:
     cd <respository_name_here>
     ```
 
-3. Build the Docker image for your Spring Boot application:
+3. Run Docker Containers of MySQL and Elasticsearch :
 
     ```bash
-    docker build -t speer-application-backend .
+    docker compose up
     ```
 
-4. Run Docker Compose to start MySQL, Elasticsearch, and your Spring Boot application:
+4. Now run the following commands and start your Spring Boot application:
 
     ```bash
-    docker-compose up
+    mvn clean install
+    ```
+   ```bash
+    mvn spring-boot:run
     ```
 
 5. Access your application at [http://localhost:8080](http://localhost:8080)

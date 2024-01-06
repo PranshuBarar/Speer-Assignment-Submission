@@ -1,7 +1,7 @@
 version: '3'
 services:
   mysql:
-    image: mysql:5.7
+    image: mysql:8
     environment:
       MYSQL_ROOT_PASSWORD: rootpassword
       MYSQL_DATABASE: speerDB
@@ -9,6 +9,8 @@ services:
       MYSQL_PASSWORD: password
     ports:
       - "3306:3306"
+    networks:
+      - mynetwork
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.15.2
     environment:
@@ -16,11 +18,8 @@ services:
       - cluster.name=docker-cluster
     ports:
       - "9200:9200"
+    networks:
+      - mynetwork
 
-  speer-application-backend:
-    image: speer-application-backend
-    depends_on:
-      - elasticsearch
-      - mysql
-    ports:
-      - "8080:8080"
+networks:
+  mynetwork:

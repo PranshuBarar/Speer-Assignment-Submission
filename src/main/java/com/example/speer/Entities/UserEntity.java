@@ -31,7 +31,7 @@ public class UserEntity {
     @JsonIgnore
     private List<NoteEntity> SelfNotesList = new ArrayList<>();
 
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(
             name = "shared_notes",
             joinColumns = @JoinColumn(name = "shared_with_user"),
