@@ -82,6 +82,7 @@ This project uses the following tech stack:
 * [Hibernate](https://hibernate.org/)
 * [MySQL](https://www.mysql.com/) (For Database)
 * [Elasticsearch](https://www.elastic.co/) (For Indexing)
+* [OpenAPI (for API Documentation)](https://www.openapis.org/)
 
 _________________________________________________
 # Project Structure
