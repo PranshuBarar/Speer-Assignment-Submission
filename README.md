@@ -41,7 +41,7 @@ Make sure you have the following tools installed on your machine:
     mvn spring-boot:run
     ```
 
-5. Access your application at [http://localhost:8080](http://localhost:8080)
+5. Access application at [http://localhost:8080/springboot3/swagger-ui/index.html#/](http://localhost:8080/springboot3/swagger-ui/index.html#/)
 
 ## Additional Notes
 
