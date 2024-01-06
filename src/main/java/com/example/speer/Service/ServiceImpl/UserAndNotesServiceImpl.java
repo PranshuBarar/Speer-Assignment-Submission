@@ -142,7 +142,7 @@ public class UserAndNotesServiceImpl {
                         .findFirst()
                         .orElse(null);
                 if(sharedNote == null){
-                    throw new Exception("We are sorry, neither you are owner, nor this note is shared with you");
+                    throw new Exception("We are sorry, neither you are owner, nor this note is shared with you by any user");
                 }
                 else return sharedNote;
             }
@@ -203,6 +203,8 @@ public class UserAndNotesServiceImpl {
             //Here we are deleting the note from noteRepo
             userEntity.getSelfNotesList().remove(matchingNote);
             userRepository.save(userEntity);
+
+            noteRepository.deleteById(noteId);
 
             // Delete from Elasticsearch also
             noteRepositoryES.deleteByNoteMySqlId(matchingNote.getNoteId());

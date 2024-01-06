@@ -17,26 +17,51 @@ public class HelperFunctions {
 //     * @return String
 //     */
 
+//    public static String buildMultiIndexMatchBody(String query, int userId) {
+//        return "{\n" +
+//                "\"from\": 0,\n" +
+//                "\"size\": 100,\n" +
+//                "\"track_total_hits\": true,\n" +
+//                "\"sort\" : {\n" +
+//                "      \"id\": {\"order\": \"asc\"}\n" +
+//                "      },\n" +
+//                "  \"query\": {\n" +
+//                "    \"bool\": {\n" +
+//                "      \"must\": [\n" +
+//                "        {\"query_string\": {\"query\": \"*" + query + "*\",\"fields\": [\"" + SEARCH_FIELD + "\"], \"default_operator\": \"AND\"}},\n" +
+//                "        {\"term\": {\"ownerId\": " + userId + "}},\n" +
+//                "        {\"terms\": {\"sharedWithUsers\": [" + userId + "]}}\n" +
+//                "      ]\n" +
+//                "    }\n" +
+//                "  },\n" +
+//                "  \"highlight\": {\n" +
+//                "    \"fields\": {\n" +
+//                "      \"*\": {}\n" +
+//                "    },\n" +
+//                "    \"require_field_match\": true\n" +
+//                " }\n" +
+//                "}";
+//    }
+
     public static String buildMultiIndexMatchBody(String query, int userId) {
         return "{\n" +
                 "\"from\": 0,\n" +
                 "\"size\": 100,\n" +
                 "\"track_total_hits\": true,\n" +
                 "\"sort\" : {\n" +
-                "      \"id\": {\"order\": \"asc\"}\n" +
+                "      \"noteMySqlId\": {\"order\": \"asc\"}\n" +
                 "      },\n" +
                 "  \"query\": {\n" +
                 "    \"bool\": {\n" +
                 "      \"must\": [\n" +
-                "        {\"query_string\": {\"query\": \"*" + query + "*\",\"fields\": [\"" + SEARCH_FIELD + "\"], \"default_operator\": \"AND\"}},\n" +
-                "        {\"term\": {\"ownerId\": " + userId + "}},\n" +
-                "        {\"terms\": {\"sharedWithUsers\": [" + userId + "]}}\n" +
+                "        {\"query_string\": {\"query\": \"*" + query + "*\",\"fields\": [\"note\"], \"default_operator\": \"AND\"}},\n" +
+                "        {\"term\": {\"ownerId\": " + userId + "}}\n" +
                 "      ]\n" +
                 "    }\n" +
                 "  },\n" +
                 "  \"highlight\": {\n" +
                 "    \"fields\": {\n" +
-                "      \"*\": {}\n" +
+                "      \"note\": {}\n" +
                 "    },\n" +
                 "    \"require_field_match\": true\n" +
                 " }\n" +

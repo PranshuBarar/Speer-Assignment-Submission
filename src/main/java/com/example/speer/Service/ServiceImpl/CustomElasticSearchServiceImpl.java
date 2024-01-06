@@ -40,8 +40,7 @@ public class CustomElasticSearchServiceImpl implements ElasticSearchService {
     private CustomQuery executeHttpRequest(String body) throws IOException{
         try(CloseableHttpClient httpClient = HttpClients.createDefault()) {
             CustomQuery customQuery = new CustomQuery();
-            HttpPost httpPost = new HttpPost(HelperFunctions.buildSearchUri(elasticSearchUri, "", elasticSearchSearchPrefix));
-
+            HttpPost httpPost = new HttpPost(HelperFunctions.buildSearchUri(elasticSearchUri, "note_index", elasticSearchSearchPrefix));
             httpPost.setHeader(Constants.CONTENT_ACCEPT, Constants.APP_TYPE);
             httpPost.setHeader(Constants.CONTENT_TYPE, Constants.APP_TYPE);
 
