@@ -57,8 +57,7 @@ public class CustomElasticSearchServiceImpl implements ElasticSearchService {
                                     .getJSONArray(Constants.HITS)
                                     .toString());
                     customQuery
-                            .setNumberOfResults(myObject.getJSONObject(Constants.HITS)
-                                    .getInt(Constants.TOTAL_HITS));
+                            .setNumberOfResults(totalHits);
                     customQuery.setTimeTook((float) ((double) myObject.getInt(Constants.TOOK)/Constants.TO_MS));
                 }
                 else{
