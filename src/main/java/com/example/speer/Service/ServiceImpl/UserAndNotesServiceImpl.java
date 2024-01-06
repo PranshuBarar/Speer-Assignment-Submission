@@ -215,20 +215,68 @@ public class UserAndNotesServiceImpl {
                 throw new AccessDeniedException("You are not allowed to share as you are not the owner of this note");
             }
 
+            /*
+            * if(sharedNoteRepo contains matchingNote
+            * [we will check this by comparing the noteEntity.getId() of each sharedNote]
+            * then)
+            *
+            *       {
+            *           if the above condition is met it means this matching Note is in
+            *           the sharedNoteRepo ->
+            *                  (then we will check that whether that note has been shared with
+            *                   recipient by comparing sharedUser.getId() with recipientId)
+            *
+            *                 {
+            *                     if the code is reaching this block, it means that this owner has already shared
+            *                     this note with the recipient, hence no need to share it again
+            *                 }
+            *
+            *       }
+            */
+
+            //================================================================
+            //Implementation of above pseudo code
+            //================================================================
+            {
+                SharedNote sharedNote = sharedNoteRepository.findByNoteEntity(matchingNote);
+
+                if (sharedNote != null) {
+                    if (sharedNote.getSharedWithUser().getId() == recipientId) {
+                        return "Note has already been shared with the recipient";
+                    }
+                }
+            }
+            //================================================================
+
+            /*
+            * If code reaches this block it means note has not been shared with recipient
+            Hence now we will make a new entry in sharedNote table and share this note
+            with the recipient
+            *
+            */
+
+            //Let's create a new sharedNote
             SharedNote sharedNote = SharedNote.builder()
                     .sharedWithUser(recipientUserEntity)
                     .noteEntity(matchingNote)
                     .build();
 
+            //Save this sharedNote in the repository
             sharedNoteRepository.save(sharedNote);
 
+            //================================================================
+            //Also update the information in Elasticsearch
             NoteEntityES noteEntityES = noteRepositoryES.findByNoteMySqlId(noteId);
             noteEntityES.getSharedWithUsers().add(recipientId);
 
             noteRepositoryES.save(noteEntityES);
+            //================================================================
 
             return "Note successfully shared";
         }
+
+        //If code reaches this block it means it never entered the above if block
+        //Hence we will throw an exception
         throw new AccessDeniedException("You are not authorized");
     }
 
