@@ -89,7 +89,7 @@ _________________________________________________
 _________________________________________________
 
 ## Application Structure
-![imgonline-com-ua-twotoone-HTWW9MlcgzYnpss](https://github.com/PranshuBarar/Speer-Assignment-Submission/assets/117909106/23a64320-22ca-46b8-a94a-7ab865fe5117)
+![imgonline-com-ua-twotoone-aaoLcGP81DFMhJb](https://github.com/PranshuBarar/Speer-Assignment-Submission/assets/117909106/332fe99b-f2db-45b2-99db-78d268d07205)
 
 ## MySQL Database Structure
 
