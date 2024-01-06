@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface NoteRepository extends JpaRepository<NoteEntity, Integer> {
+    void deleteByNoteId(int noteId);
 }

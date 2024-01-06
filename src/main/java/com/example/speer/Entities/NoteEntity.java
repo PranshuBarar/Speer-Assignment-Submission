@@ -6,9 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.elasticsearch.annotations.Document;
-
-import java.util.*;
 
 @Entity
 @Data
@@ -20,7 +17,7 @@ public class NoteEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private int noteId;
 
     private String note;
 

@@ -21,38 +21,67 @@ public class UserAndNotesController {
     CustomElasticSearchServiceImpl elasticSearchService;
     @GetMapping("/notes") //http://localhost:8080/api/notes
     public ResponseEntity<?> getAllNotes() {
-        return new ResponseEntity<>(userAndNotesServiceImpl.getAllNotes(),HttpStatus.OK);
+        try{
+            return new ResponseEntity<>(userAndNotesServiceImpl.getAllNotes(),HttpStatus.OK);
+        } catch(Exception e){
+            return  new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
+        }
     }
 
     @GetMapping("/notes/{noteId}") //http://localhost:8080/api/notes/<noteId>
     public ResponseEntity<?> getByNoteId(@PathVariable("noteId") int noteId) throws Exception {
-        return new ResponseEntity<>(userAndNotesServiceImpl.getNoteById(noteId),HttpStatus.OK);
+        try{
+            return new ResponseEntity<>(userAndNotesServiceImpl.getNoteById(noteId),HttpStatus.OK);
+        } catch(Exception e){
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
+        }
     }
 
     @PostMapping("/notes") //http://localhost:8080/api/notes
     public ResponseEntity<?> createNote(@RequestBody String note) throws Exception {
-        return new ResponseEntity<>(userAndNotesServiceImpl.createNote(note),HttpStatus.OK);
+        try{
+            return new ResponseEntity<>(userAndNotesServiceImpl.createNote(note),HttpStatus.OK);
+        } catch(Exception e){
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
+        }
     }
 
     @PutMapping("/notes/{noteId}") //http://localhost:8080/api/notes/<noteId>
     public ResponseEntity<?> updateNote(@RequestBody String note, @PathVariable("noteId") int noteId) throws Exception {
-        return new ResponseEntity<>(userAndNotesServiceImpl.updateNote(note, noteId),HttpStatus.OK);
+        try {
+            return new ResponseEntity<>(userAndNotesServiceImpl.updateNote(note, noteId),HttpStatus.OK);
+        } catch (Exception e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
     }
 
     @DeleteMapping("/notes/{noteId}") //http://localhost:8080/api/notes/<noteId>
     public ResponseEntity<?> deleteNote(@PathVariable("noteId") int noteId) throws Exception {
-        return new ResponseEntity<>(userAndNotesServiceImpl.deleteNote(noteId),HttpStatus.OK);
+        try{
+            return new ResponseEntity<>(userAndNotesServiceImpl.deleteNote(noteId),HttpStatus.OK);
+        } catch(Exception e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
     }
 
     @PostMapping("/notes/{noteId}/share") //http://localhost:8080/api/notes/<noteId>/share
     public ResponseEntity<?> shareNote(@PathVariable("noteId") int noteId, @RequestBody int recipientId) throws Exception {
-        return new ResponseEntity<>(userAndNotesServiceImpl.shareNote(noteId,recipientId),HttpStatus.OK);
+        try{
+            return new ResponseEntity<>(userAndNotesServiceImpl.shareNote(noteId,recipientId),HttpStatus.OK);
+        } catch(Exception e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
     }
 
     @GetMapping("/search") //http://localhost:8080/api/search?q=<query>
-    public ResponseEntity<CustomQuery> searchQuery(@RequestParam("q") String query) throws IOException {
-        CustomQuery customQuery = elasticSearchService.searchQuery(query.trim().toLowerCase());
-        return new ResponseEntity<>(customQuery, HttpStatus.OK);
+    public ResponseEntity<?> searchQuery(@RequestParam("q") String query) throws IOException {
+        try{
+            CustomQuery customQuery = elasticSearchService.searchQuery(query.trim().toLowerCase());
+            return new ResponseEntity<>(customQuery, HttpStatus.OK);
+        } catch(Exception e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+
     }
 }
 

@@ -15,7 +15,7 @@ import lombok.*;
 public class SharedNote {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private int sharingTransactionId;
 
     @ManyToOne
     @JoinColumn(name = "note_id")

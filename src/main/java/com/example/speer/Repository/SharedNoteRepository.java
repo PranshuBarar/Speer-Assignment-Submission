@@ -11,8 +11,5 @@ import java.util.List;
 @Repository
 public interface SharedNoteRepository extends JpaRepository<SharedNote,Integer> {
 
-    @Query(value = "SELECT sn FROM SharedNotes sn WHERE sn.note.user.id = :userId", nativeQuery = true)
-    List<SharedNote> findAllByUserId(int userId);
-
     SharedNote findByNoteEntity(NoteEntity noteEntity);
 }
