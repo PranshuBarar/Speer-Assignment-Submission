@@ -57,6 +57,15 @@ public class JwtAuthenticationController {
         return ResponseEntity.ok(new JwtResponse(token));
     }
 
+    @Operation(summary = "Register here to explore the Application APIs")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success Registration ",
+                    content = { @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Book.class)) }),
+            @ApiResponse(responseCode = "400", description = "Failed Registration",
+                    content = @Content),
+            @ApiResponse(responseCode = "404", description = "Failed Registration",
+                    content = @Content) })
     @PostMapping("/auth/signup")
     public ResponseEntity<?> saveUser(@RequestBody UserEntryDto userEntryDto) throws Exception {
         try{
