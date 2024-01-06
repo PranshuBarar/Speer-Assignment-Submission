@@ -31,11 +31,4 @@ public class UserEntity {
     @JsonIgnore
     private List<NoteEntity> SelfNotesList = new ArrayList<>();
 
-    @ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(
-            name = "shared_notes",
-            joinColumns = @JoinColumn(name = "shared_with_user"),
-            inverseJoinColumns = @JoinColumn(name = "shared_note")
-    )
-    private Set<NoteEntity> sharedNotes = new HashSet<>();
 }

@@ -2,9 +2,11 @@ package com.example.speer.Service.ServiceImpl;
 
 import com.example.speer.Entities.NoteEntity;
 import com.example.speer.Entities.NoteEntityES;
+import com.example.speer.Entities.SharedNote;
 import com.example.speer.Entities.UserEntity;
 import com.example.speer.Repository.ESRepo.NoteRepositoryES;
 import com.example.speer.Repository.NoteRepository;
+import com.example.speer.Repository.SharedNoteRepository;
 import com.example.speer.Repository.UserRepository;
 import com.example.speer.config.CustomUserDetails;
 import jakarta.persistence.EntityNotFoundException;
@@ -22,7 +24,6 @@ import javax.naming.AuthenticationException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @Service
 public class UserAndNotesServiceImpl {
@@ -36,6 +37,9 @@ public class UserAndNotesServiceImpl {
     @Autowired
     NoteRepositoryES noteRepositoryES;
 
+    @Autowired
+    SharedNoteRepository sharedNoteRepository;
+
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UserAndNotesServiceImpl.class);
 
@@ -44,7 +48,7 @@ public class UserAndNotesServiceImpl {
         return "Hello User with userId: " + currentUserId;
     }
 
-    public List<NoteEntity> getAllNotes() throws EntityNotFoundException,SessionAuthenticationException  {
+    public List<Object> getAllNotes() throws EntityNotFoundException,SessionAuthenticationException  {
         //We will first have to find the current authenticated user
         int currentUserId = getCurrentUserId();
         Optional<UserEntity> optionalUserEntity = userRepository.findById(currentUserId);
@@ -52,10 +56,13 @@ public class UserAndNotesServiceImpl {
             UserEntity userEntity = optionalUserEntity.get();
 
             List<NoteEntity> selfNotesList = userEntity.getSelfNotesList();
-            Set<NoteEntity> sharedNotes = userEntity.getSharedNotes();
+            List<SharedNote> sharedNotesList = sharedNoteRepository.findAll()
+                    .stream()
+                    .filter(note -> note.getSharedWithUser().getId() == currentUserId)
+                    .toList();
 
-            List<NoteEntity> allNotes = new ArrayList<>(selfNotesList);
-            allNotes.addAll(sharedNotes);
+            List<Object> allNotes = new ArrayList<>(selfNotesList);
+            allNotes.addAll(sharedNotesList);
 
             return allNotes;
 
@@ -112,32 +119,33 @@ public class UserAndNotesServiceImpl {
 
     //============================================================================================
     //============================================================================================
-    public NoteEntity getNoteById(int noteId) throws Exception {
+    public Object getNoteById(int noteId) throws Exception {
         int currentUserId = getCurrentUserId();
         Optional<UserEntity> optionalUserEntity = userRepository.findById(currentUserId);
         if(optionalUserEntity.isPresent()) {
             UserEntity userEntity = optionalUserEntity.get();
-
-            //it means this user is not the owner of this note
-            //Now we will check whether this note has been shared with this user or not
-            NoteEntity matchingNote = userEntity.getSelfNotesList()
+            NoteEntity noteEntity = userEntity
+                    .getSelfNotesList()
                     .stream()
-                    .filter(noteEntity -> noteEntity.getId() == noteId)
+                    .filter(note -> note.getId() == noteId)
                     .findFirst()
                     .orElse(null);
 
-            if (matchingNote == null) {
-                matchingNote = userEntity.getSharedNotes()
+            if(noteEntity != null){
+                return noteEntity;
+            }
+            else {
+                SharedNote sharedNote = sharedNoteRepository
+                        .findAll()
                         .stream()
-                        .filter(noteEntity -> noteEntity.getId() == noteId)
+                        .filter(note -> note.getSharedWithUser().getId() == currentUserId)
                         .findFirst()
                         .orElse(null);
-                if(matchingNote == null) {
-                    throw new IllegalStateException("Neither you are owner nor this note has been shared with you, hence not allowed");
+                if(sharedNote == null){
+                    throw new AccessDeniedException("We are sorry, neither you are owner, nor this note is shared with you");
                 }
-                else return matchingNote;
+                else return sharedNote;
             }
-            else return matchingNote;
         }
         throw new IllegalAccessException("You are not authenticated");
     }
@@ -145,7 +153,8 @@ public class UserAndNotesServiceImpl {
         int currentUserId = getCurrentUserId();
         Optional<UserEntity> optionalUserEntity = userRepository.findById(currentUserId);
         if(optionalUserEntity.isPresent()) {
-            NoteEntity matchingNote = getNoteEntity(noteId, optionalUserEntity);
+            UserEntity userEntity = optionalUserEntity.get();
+            NoteEntity matchingNote = getNoteEntity(noteId, userEntity);
 
             if(matchingNote == null){
                 throw new AccessDeniedException("You are not allowed to modify as you are not the owner of this note");
@@ -172,31 +181,18 @@ public class UserAndNotesServiceImpl {
         int currentUserId = getCurrentUserId();
         Optional<UserEntity> optionalUserEntity = userRepository.findById(currentUserId);
         if(optionalUserEntity.isPresent()) {
-            NoteEntity matchingNote = getNoteEntity(noteId, optionalUserEntity);
+            UserEntity userEntity = optionalUserEntity.get();
+            NoteEntity matchingNote = getNoteEntity(noteId, userEntity);
 
             if(matchingNote == null){
                 throw new AccessDeniedException("You are not allowed to modify as you are not the owner of this note");
             }
 
-            for(UserEntity user : matchingNote.getSharedWithUsers()){
-                user.getSharedNotes().remove(matchingNote);
-            }
-
             //Here we are deleting the note in MySQL DB
-            try{
-                noteRepository.deleteById(matchingNote.getId());
-            } catch (Exception e) {
-                LOGGER.error("Error deleting note from MySQL", e);
-                throw new RuntimeException("Error deleting note from MySQL", e);
-            }
+            noteRepository.deleteById(matchingNote.getId());
 
             // Delete from Elasticsearch also
-            try {
-                noteRepositoryES.deleteByNoteMySqlId(matchingNote.getId());
-            } catch (Exception e) {
-                LOGGER.error("Error deleting note from Elasticsearch", e);
-                throw new RuntimeException("Error deleting note from Elasticsearch", e);
-            }
+            noteRepositoryES.deleteByNoteMySqlId(matchingNote.getId());
 
             System.out.println(noteId);
             System.out.println(matchingNote.getId());
@@ -211,20 +207,24 @@ public class UserAndNotesServiceImpl {
         Optional<UserEntity> optionalCurrentUserEntity = userRepository.findById(currentUserId);
         Optional<UserEntity> optionalRecipientUserEntity = userRepository.findById(recipientId);
         if(optionalRecipientUserEntity.isPresent() && optionalCurrentUserEntity.isPresent()) {
-            NoteEntity matchingNote = getNoteEntity(noteId, optionalRecipientUserEntity);
+            UserEntity currentUserEntity = optionalCurrentUserEntity.get();
+            UserEntity recipientUserEntity = optionalRecipientUserEntity.get();
+
+            NoteEntity matchingNote = getNoteEntity(noteId, currentUserEntity);
             if(matchingNote == null){
                 throw new AccessDeniedException("You are not allowed to share as you are not the owner of this note");
             }
 
-            UserEntity recipientUserEntity = optionalRecipientUserEntity.get();
-            recipientUserEntity.getSharedNotes().add(matchingNote);
-            matchingNote.getSharedWithUsers().add(recipientUserEntity);
+            SharedNote sharedNote = SharedNote.builder()
+                    .sharedWithUser(recipientUserEntity)
+                    .noteEntity(matchingNote)
+                    .build();
 
-            noteRepository.save(matchingNote);
-            userRepository.save(recipientUserEntity);
+            sharedNoteRepository.save(sharedNote);
 
             NoteEntityES noteEntityES = noteRepositoryES.findByNoteMySqlId(noteId);
             noteEntityES.getSharedWithUsers().add(recipientId);
+
             noteRepositoryES.save(noteEntityES);
 
             return "Note successfully shared";
@@ -244,15 +244,13 @@ public class UserAndNotesServiceImpl {
     //These are helper methods for the above methods
     //============================================================================================
 
-    public static NoteEntity getNoteEntity(int noteId, Optional<UserEntity> optionalUserEntity) {
-        UserEntity userEntity = optionalUserEntity.get();
+    public static NoteEntity getNoteEntity(int noteId, UserEntity userEntity) {
 
-        NoteEntity matchingNote = userEntity.getSelfNotesList()
+        return userEntity.getSelfNotesList()
                 .stream()
                 .filter(noteEntity -> noteEntity.getId() == noteId)
                 .findFirst()
                 .orElse(null);
-        return matchingNote;
     }
 
     public int getCurrentUserId()  {

@@ -1,5 +1,6 @@
 package com.example.speer.Entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,8 +26,7 @@ public class NoteEntity {
 
     @ManyToOne
     @JoinColumn
+    @JsonIgnore
     UserEntity userEntity;
 
-    @ManyToMany(mappedBy = "sharedNotes", cascade = CascadeType.ALL)
-    private Set<UserEntity> sharedWithUsers = new HashSet<>();
 }

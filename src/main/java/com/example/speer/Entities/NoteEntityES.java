@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.elasticsearch.annotations.Document;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -26,6 +27,6 @@ public class NoteEntityES {
 
     private int ownerId;
 
-    private Set<Integer> sharedWithUsers;
+    private Set<Integer> sharedWithUsers = new HashSet<>();
 
 }
