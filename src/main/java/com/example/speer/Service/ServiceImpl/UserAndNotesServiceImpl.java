@@ -184,7 +184,6 @@ public class UserAndNotesServiceImpl {
 
             //Here we are deleting the note in MySQL DB
             try{
-                System.out.println("RadheKrishna");
                 noteRepository.deleteById(matchingNote.getId());
             } catch (Exception e) {
                 LOGGER.error("Error deleting note from MySQL", e);
