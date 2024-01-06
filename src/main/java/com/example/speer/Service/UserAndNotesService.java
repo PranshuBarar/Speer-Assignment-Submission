@@ -10,13 +10,12 @@ import org.springframework.security.web.authentication.session.SessionAuthentica
 import java.util.List;
 
 public interface UserAndNotesService {
-    UserEntity signup(UserEntryDto userEntryDto) throws Exception;
 
-    List<NoteEntity> getAllNotes() throws EntityNotFoundException, SessionAuthenticationException;
+    List<Object> getAllNotes() throws EntityNotFoundException, SessionAuthenticationException;
 
     String createNote(String note) throws AccessDeniedException;
 
-    NoteEntity getNoteById(int noteId) throws Exception;
+    Object getNoteById(int noteId) throws Exception;
 
     String updateNote(String note, int noteId) throws Exception;
 

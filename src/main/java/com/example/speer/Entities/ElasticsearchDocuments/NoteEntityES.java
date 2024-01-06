@@ -1,4 +1,4 @@
-package com.example.speer.Entities;
+package com.example.speer.Entities.ElasticsearchDocuments;
 
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;

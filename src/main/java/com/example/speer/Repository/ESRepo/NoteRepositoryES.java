@@ -1,9 +1,7 @@
 package com.example.speer.Repository.ESRepo;
 
-import com.example.speer.Entities.NoteEntity;
-import com.example.speer.Entities.NoteEntityES;
+import com.example.speer.Entities.ElasticsearchDocuments.NoteEntityES;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
-import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
 import org.springframework.stereotype.Repository;
 
 @Repository

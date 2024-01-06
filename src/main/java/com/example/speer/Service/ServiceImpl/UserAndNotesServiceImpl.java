@@ -1,13 +1,14 @@
 package com.example.speer.Service.ServiceImpl;
 
 import com.example.speer.Entities.NoteEntity;
-import com.example.speer.Entities.NoteEntityES;
+import com.example.speer.Entities.ElasticsearchDocuments.NoteEntityES;
 import com.example.speer.Entities.SharedNote;
 import com.example.speer.Entities.UserEntity;
 import com.example.speer.Repository.ESRepo.NoteRepositoryES;
 import com.example.speer.Repository.NoteRepository;
 import com.example.speer.Repository.SharedNoteRepository;
 import com.example.speer.Repository.UserRepository;
+import com.example.speer.Service.UserAndNotesService;
 import com.example.speer.config.CustomUserDetails;
 import jakarta.persistence.EntityNotFoundException;
 import org.slf4j.Logger;
@@ -26,7 +27,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class UserAndNotesServiceImpl {
+public class UserAndNotesServiceImpl implements UserAndNotesService {
 
     @Autowired
     UserRepository userRepository;

@@ -40,82 +40,46 @@ public class CustomElasticSearchServiceImpl implements ElasticSearchService {
         return executeHttpRequest(body);
     }
 
-//    private CustomQuery executeHttpRequest(String body) throws IOException{
-//        try(CloseableHttpClient httpClient = HttpClients.createDefault()) {
-//            CustomQuery customQuery = new CustomQuery();
-//            HttpPost httpPost = new HttpPost(HelperFunctions.buildSearchUri(elasticSearchUri, "note_index", elasticSearchSearchPrefix));
-//            httpPost.setHeader(Constants.CONTENT_ACCEPT, Constants.APP_TYPE);
-//            httpPost.setHeader(Constants.CONTENT_TYPE, Constants.APP_TYPE);
-//
-//            try{
-//                httpPost.setEntity(new StringEntity(body, Constants.ENCODING_UTF8));
-//                HttpResponse response = httpClient.execute(httpPost);
-//                String message = EntityUtils.toString(response.getEntity());
-//                JSONObject myObject = new JSONObject(message);
-//                int totalHits = myObject.getJSONObject(Constants.HITS).getJSONObject(Constants.TOTAL_HITS).getInt("value");
-//                if(totalHits != 0){
-//                    customQuery
-//                            .setElements(myObject
-//                                    .getJSONObject(Constants.HITS)
-//                                    .getJSONArray(Constants.HITS)
-//                                    .toString());
-//                    customQuery
-//                            .setNumberOfResults(totalHits);
-//                    customQuery.setTimeTook((float) ((double) myObject.getInt(Constants.TOOK)/Constants.TO_MS));
-//                }
-//                else{
-//                    customQuery.setElements(null);
-//                    customQuery.setNumberOfResults(0);
-//                    customQuery.setTimeTook((float) ((double) myObject.getInt(Constants.TOOK) / Constants.TO_MS));
-//                }
-//            } catch(IOException | JSONException e)  {
-//                System.out.println("Error while connecting to elastic engine");
-//                customQuery.setNumberOfResults(0);
-//            }
-//
-//            return customQuery;
-//        }
-//    }
-private CustomQuery executeHttpRequest(String body) throws IOException {
-    try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
-        CustomQuery customQuery = new CustomQuery();
-        HttpPost httpPost = new HttpPost(HelperFunctions.buildSearchUri(elasticSearchUri, "note_index", elasticSearchSearchPrefix));
-        httpPost.setHeader(Constants.CONTENT_ACCEPT, Constants.APP_TYPE);
-        httpPost.setHeader(Constants.CONTENT_TYPE, Constants.APP_TYPE);
+    private CustomQuery executeHttpRequest(String body) throws IOException {
+        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+            CustomQuery customQuery = new CustomQuery();
+            HttpPost httpPost = new HttpPost(HelperFunctions.buildSearchUri(elasticSearchUri, "note_index", elasticSearchSearchPrefix));
+            httpPost.setHeader(Constants.CONTENT_ACCEPT, Constants.APP_TYPE);
+            httpPost.setHeader(Constants.CONTENT_TYPE, Constants.APP_TYPE);
 
-        try {
-            httpPost.setEntity(new StringEntity(body, Constants.ENCODING_UTF8));
-            HttpResponse response = httpClient.execute(httpPost);
-            String message = EntityUtils.toString(response.getEntity());
-            JSONObject myObject = new JSONObject(message);
+            try {
+                httpPost.setEntity(new StringEntity(body, Constants.ENCODING_UTF8));
+                HttpResponse response = httpClient.execute(httpPost);
+                String message = EntityUtils.toString(response.getEntity());
+                JSONObject myObject = new JSONObject(message);
 
-            int totalHits = myObject.getJSONObject(Constants.HITS).getJSONObject(Constants.TOTAL_HITS).getInt("value");
-            if (totalHits != 0) {
-                JSONArray hitsArray = myObject.getJSONObject(Constants.HITS).getJSONArray(Constants.HITS);
-                List<String> notesList = new ArrayList<>();
+                int totalHits = myObject.getJSONObject(Constants.HITS).getJSONObject(Constants.TOTAL_HITS).getInt("value");
+                if (totalHits != 0) {
+                    JSONArray hitsArray = myObject.getJSONObject(Constants.HITS).getJSONArray(Constants.HITS);
+                    List<String> notesList = new ArrayList<>();
 
-                for (int i = 0; i < hitsArray.length(); i++) {
-                    JSONObject hitObject = hitsArray.getJSONObject(i);
-                    JSONObject sourceObject = hitObject.getJSONObject("_source");
-                    String note = sourceObject.getString("note");
-                    notesList.add(note);
+                    for (int i = 0; i < hitsArray.length(); i++) {
+                        JSONObject hitObject = hitsArray.getJSONObject(i);
+                        JSONObject sourceObject = hitObject.getJSONObject("_source");
+                        String note = sourceObject.getString("note");
+                        notesList.add(note);
+                    }
+
+                    customQuery.setElements(notesList.toString());
+                    customQuery.setNumberOfResults(totalHits);
+                    customQuery.setTimeTook((float) ((double) myObject.getInt(Constants.TOOK) / Constants.TO_MS));
+                } else {
+                    customQuery.setElements(null);
+                    customQuery.setNumberOfResults(0);
+                    customQuery.setTimeTook((float) ((double) myObject.getInt(Constants.TOOK) / Constants.TO_MS));
                 }
-
-                customQuery.setElements(notesList.toString());
-                customQuery.setNumberOfResults(totalHits);
-                customQuery.setTimeTook((float) ((double) myObject.getInt(Constants.TOOK) / Constants.TO_MS));
-            } else {
-                customQuery.setElements(null);
+            } catch (IOException | JSONException e) {
+                System.out.println("Error while connecting to elastic engine");
                 customQuery.setNumberOfResults(0);
-                customQuery.setTimeTook((float) ((double) myObject.getInt(Constants.TOOK) / Constants.TO_MS));
             }
-        } catch (IOException | JSONException e) {
-            System.out.println("Error while connecting to elastic engine");
-            customQuery.setNumberOfResults(0);
-        }
 
-        return customQuery;
+            return customQuery;
+        }
     }
-}
 
 }
