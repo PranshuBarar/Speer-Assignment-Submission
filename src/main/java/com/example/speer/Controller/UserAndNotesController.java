@@ -3,6 +3,8 @@ package com.example.speer.Controller;
 import com.example.speer.Service.ServiceImpl.CustomElasticSearchServiceImpl;
 import com.example.speer.Service.ServiceImpl.UserAndNotesServiceImpl;
 import com.example.speer.utils.CustomQuery;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +14,8 @@ import java.io.IOException;
 
 @RestController
 @RequestMapping("/api")
+@SecurityRequirement(name = "Bearer Authentication")
+@Tag(name = "Notes", description = "The Notes APIs contain all the operations that can be performed on a user's note.")
 public class UserAndNotesController {
 
     @Autowired

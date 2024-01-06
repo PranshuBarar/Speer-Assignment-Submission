@@ -2,6 +2,11 @@ package com.example.speer.config;
 
 import com.example.speer.Entities.UserEntity;
 import com.example.speer.EntryDtos.UserEntryDto;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +18,8 @@ import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+
+import java.awt.print.Book;
 
 @Getter
 @Setter
@@ -29,6 +36,15 @@ public class JwtAuthenticationController {
     @Autowired
     private JwtUserDetailsServiceImpl jwtUserDetailsServiceImpl;
 
+    @Operation(summary = "Authenticate to get access JWT token")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success Authentication",
+                    content = { @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Book.class)) }),
+            @ApiResponse(responseCode = "400", description = "Failed Authentication",
+                    content = @Content),
+            @ApiResponse(responseCode = "404", description = "Failed Authentication",
+                    content = @Content) })
     @PostMapping("/auth/login")
     public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest jwtRequest) throws Exception {
         String userEmail = jwtRequest.getUserEmail();

@@ -9,6 +9,7 @@ import org.springframework.data.elasticsearch.repository.config.EnableElasticsea
 public class SpeerApplication {
 
 	public static void main(String[] args) {
+		System.setProperty("server.servlet.context-path", "/springboot3");
 		SpringApplication.run(SpeerApplication.class, args);
 	}
 
