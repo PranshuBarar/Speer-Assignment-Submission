@@ -1,5 +1,14 @@
 # Speer Assignment For Backend
-## This repository contains the backend code for the Assignment for the position of Backend Developer
+This repository serves as the backend implementation for the Backend Developer position assignment. The project features a range of functionalities aimed at delivering a robust and efficient backend system.
+
+## Features of this Application
+**Secure Endpoints:** <br> *Utilize Spring Security for robust endpoint security, protecting against unauthorized access.*
+
+**JWT Authentication:** <br> *Implement JWT-based authentication management for secure user access.*
+
+**Rate Limiting (Bucket4j):** <br> *Ensure optimal system performance with API rate limiting using Bucket4j, preventing abuse.*
+
+**Elasticsearch Indexing:** <br> *Optimize data retrieval with Elasticsearch indexing, enhancing search capabilities.*
 
 ## Table of Contents
 - [Instructions for Running this Project on your Computer](#instructions-for-running-this-project-on-your-computer)
