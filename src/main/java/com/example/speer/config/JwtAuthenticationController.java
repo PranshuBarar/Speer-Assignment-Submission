@@ -37,14 +37,6 @@ public class JwtAuthenticationController {
     private JwtUserDetailsServiceImpl jwtUserDetailsServiceImpl;
 
     @Operation(summary = "Authenticate to get access JWT token")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Success Authentication",
-                    content = { @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = Book.class)) }),
-            @ApiResponse(responseCode = "400", description = "Failed Authentication",
-                    content = @Content),
-            @ApiResponse(responseCode = "404", description = "Failed Authentication",
-                    content = @Content) })
     @PostMapping("/auth/login")
     public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest jwtRequest) throws Exception {
         String userEmail = jwtRequest.getUserEmail();
@@ -58,14 +50,6 @@ public class JwtAuthenticationController {
     }
 
     @Operation(summary = "Register here to explore the Application APIs")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Success Registration ",
-                    content = { @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = Book.class)) }),
-            @ApiResponse(responseCode = "400", description = "Failed Registration",
-                    content = @Content),
-            @ApiResponse(responseCode = "404", description = "Failed Registration",
-                    content = @Content) })
     @PostMapping("/auth/signup")
     public ResponseEntity<?> saveUser(@RequestBody UserEntryDto userEntryDto) throws Exception {
         try{

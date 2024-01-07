@@ -1,5 +1,6 @@
 package com.example.speer.config;
 
+import org.apache.lucene.store.RateLimiter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,7 +24,6 @@ public class WebSecurityConfig  {
 
     @Autowired
     JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
-
 
     @Autowired
     JwtRequestFilter jwtRequestFilter;
