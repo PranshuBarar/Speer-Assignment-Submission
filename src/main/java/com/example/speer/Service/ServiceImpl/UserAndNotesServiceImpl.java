@@ -41,14 +41,6 @@ public class UserAndNotesServiceImpl implements UserAndNotesService {
     @Autowired
     SharedNoteRepository sharedNoteRepository;
 
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(UserAndNotesServiceImpl.class);
-
-    public String helloUser() throws AuthenticationException {
-        int currentUserId = getCurrentUserId();
-        return "Hello User with userId: " + currentUserId;
-    }
-
     public List<Object> getAllNotes() throws EntityNotFoundException,SessionAuthenticationException  {
         //We will first have to find the current authenticated user
         int currentUserId = getCurrentUserId();
