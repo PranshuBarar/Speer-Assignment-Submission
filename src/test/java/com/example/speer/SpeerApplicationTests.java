@@ -8,6 +8,7 @@ class SpeerApplicationTests {
 
 	@Test
 	void contextLoads() {
+
 	}
 
 }
