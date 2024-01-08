@@ -4,7 +4,7 @@ import com.example.speer.Entities.NoteEntity;
 import com.example.speer.Entities.ElasticsearchDocuments.NoteEntityES;
 import com.example.speer.Entities.SharedNote;
 import com.example.speer.Entities.UserEntity;
-import com.example.speer.Repository.ESRepo.NoteRepositoryES;
+import com.example.speer.Repository.ESRepository.NoteRepositoryES;
 import com.example.speer.Repository.NoteRepository;
 import com.example.speer.Repository.SharedNoteRepository;
 import com.example.speer.Repository.UserRepository;

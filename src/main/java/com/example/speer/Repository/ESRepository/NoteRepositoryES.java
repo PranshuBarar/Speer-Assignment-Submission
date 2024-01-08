@@ -1,4 +1,4 @@
-package com.example.speer.Repository.ESRepo;
+package com.example.speer.Repository.ESRepository;
 
 import com.example.speer.Entities.ElasticsearchDocuments.NoteEntityES;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
