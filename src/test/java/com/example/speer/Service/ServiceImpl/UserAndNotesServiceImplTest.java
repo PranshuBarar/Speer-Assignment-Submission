@@ -97,8 +97,10 @@ class UserAndNotesServiceImplTest {
         expectedResult.add(noteEntity);
 
         List<Object> actualResult = userAndNotesServiceImpl.getAllNotes();
+        System.out.println("Krishna : " + actualResult);
+        System.out.println("Krishna : " + expectedResult);
 
-        assertThat(actualResult).isEqualTo(expectedResult);
+        assertThat(actualResult).containsExactly(expectedResult.toArray());
     }
 
     @Test
@@ -145,7 +147,6 @@ class UserAndNotesServiceImplTest {
         assertThat(actualResult).isEqualTo(noteEntity);
 
         verify(userRepository, times(1)).findById(1);
-        verify(sharedNoteRepository, times(1)).findAll();
     }
 
     @Test
@@ -298,6 +299,7 @@ class UserAndNotesServiceImplTest {
         verify(noteRepositoryES, times(1)).save(any(NoteEntityES.class));
 
         verify(sharedNoteRepository, times(1)).save(any(SharedNote.class));
+        verify(sharedNoteRepository, times(1)).findByNoteEntity(noteEntity);
 
     }
 
@@ -313,12 +315,52 @@ class UserAndNotesServiceImplTest {
 
     @Test
     void shareNote_WhenUserIsNotTheOwnerOfTheNote() {
+        int noteId = 2;
+        int recipientId = 2;
+        int currentUserId = 1;
+        //First we create two userEntities, one the present user and another the recipient user
+        UserEntity userEntity = createUserEntity(1,new ArrayList<>());
+        UserEntity recipientEntity = createUserEntity(2,new ArrayList<>());
+
+
+        when(userRepository.findById(currentUserId)).thenReturn(Optional.of(userEntity));
+        when(userRepository.findById(recipientId)).thenReturn(Optional.of(recipientEntity));
+
+        assertThrows(AccessDeniedException.class, () -> userAndNotesServiceImpl.shareNote(noteId,recipientId));
+
+        verify(userRepository, times(1)).findById(currentUserId);
+        verify(userRepository, times(1)).findById(recipientId);
 
     }
 
     @Test
-    void shareNote_WhenNoteHasAlreadyBeenSharedWithRecipient() {
+    void shareNote_WhenNoteHasAlreadyBeenSharedWithRecipient() throws Exception {
+        int noteId = 1;
+        int recipientId = 2;
+        int currentUserId = 1;
+        //First we create two userEntities, one the present user and another the recipient user
+        UserEntity userEntity = createUserEntity(1,new ArrayList<>());
+        UserEntity recipientEntity = createUserEntity(2,new ArrayList<>());
 
+        //Now we will create a noteEntity with noteId 1 and will make userEntity as owner of the note
+        NoteEntity noteEntity = createNoteEntity(noteId,"Test Note", userEntity);
+        userEntity.getSelfNotesList().add(noteEntity);
+
+        //Now we will create a sharedNote which will imply that the note has already been shared with the recipient
+        SharedNote sharedNote = createSharedNote(1,noteEntity,recipientEntity);
+
+        when(userRepository.findById(currentUserId)).thenReturn(Optional.of(userEntity));
+        when(userRepository.findById(recipientId)).thenReturn(Optional.of(recipientEntity));
+        when(sharedNoteRepository.findByNoteEntity(noteEntity)).thenReturn(sharedNote);
+
+        String expectedResult = "Note has already been shared with the recipient";
+        String actualResult = userAndNotesServiceImpl.shareNote(noteId,recipientId);
+
+        assertThat(actualResult).isEqualTo(expectedResult);
+
+        verify(userRepository, times(1)).findById(currentUserId);
+        verify(userRepository, times(1)).findById(recipientId);
+        verify(sharedNoteRepository, times(1)).findByNoteEntity(noteEntity);
     }
 
 
