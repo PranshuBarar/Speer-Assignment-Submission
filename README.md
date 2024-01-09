@@ -10,6 +10,8 @@ This repository serves as the backend implementation for the Backend Developer p
 
 **Elasticsearch Indexing:** <br> *Optimize data retrieval with Elasticsearch indexing, enhancing search capabilities.*
 
+**Unit Testing with JUnit 5** <br> *Testing all the units with JUnit 5*
+
 ## Table of Contents
 - [Instructions for Running this Project on your Computer](#instructions-for-running-this-project-on-your-computer)
    * [Prerequisites](#prerequisites)
@@ -93,6 +95,7 @@ This project uses the following tech stack:
 * [MySQL](https://www.mysql.com/) (For Database)
 * [Elasticsearch](https://www.elastic.co/) (For Indexing)
 * [OpenAPI (for API Documentation)](https://www.openapis.org/)
+* [JUnit 5 for Unit Testing](https://junit.org/junit5/)
 
 _________________________________________________
 # Project Structure
