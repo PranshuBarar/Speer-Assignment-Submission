@@ -32,6 +32,7 @@ import java.util.Optional;
 
 
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.StatusResultMatchersExtensionsKt.isEqualTo;
 
@@ -181,7 +182,22 @@ class UserAndNotesServiceImplTest {
 
     @Test
     void getNoteById_WhenNeitherOwnedNorShared() {
+        //Let's say that note is being asked for the noteId = 3
+        int noteId = 2;
 
+        //Now first of all we will create a two userEntities
+        UserEntity userEntity1 = createUserEntity(1,new ArrayList<>());
+        UserEntity userEntity2 = createUserEntity(2,new ArrayList<>());
+
+        //Now we will create a noteEntity with id = 2, which will be owned by userEntity2
+        NoteEntity noteEntity = createNoteEntity(2,"Test Note", userEntity2);
+        userEntity2.getSelfNotesList().add(noteEntity);
+
+        //Now we will setup when and then conditions
+        when(userRepository.findById(1)).thenReturn(Optional.of(userEntity1));
+        when(sharedNoteRepository.findAll()).thenReturn(new ArrayList<>());
+
+        assertThrows(IllegalAccessException.class, () -> userAndNotesServiceImpl.getNoteById(noteId));
     }
 
 

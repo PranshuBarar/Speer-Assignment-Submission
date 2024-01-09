@@ -150,7 +150,7 @@ public class UserAndNotesServiceImpl implements UserAndNotesService {
                         .findFirst()
                         .orElse(null);
                 if(sharedNote == null){
-                    throw new Exception("We are sorry, neither you are owner, nor this note is shared with you by any user");
+                    throw new IllegalAccessException("We are sorry, neither you are owner, nor this note is shared with you by any user");
                 }
                 else return sharedNote;
             }
