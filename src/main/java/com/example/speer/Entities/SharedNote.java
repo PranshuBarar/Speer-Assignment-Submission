@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.Objects;
+
 
 @Entity
 @Data
@@ -25,4 +27,22 @@ public class SharedNote {
     @ManyToOne
     @JoinColumn
     private UserEntity sharedWithUser;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        SharedNote that = (SharedNote) o;
+        return sharingTransactionId == that.sharingTransactionId && Objects.equals(noteEntity, that.noteEntity) && Objects.equals(sharedWithUser, that.sharedWithUser);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(sharingTransactionId, noteEntity, sharedWithUser);
+    }
+
+    @Override
+    public String toString() {
+        return noteEntity.getNote();
+    }
 }

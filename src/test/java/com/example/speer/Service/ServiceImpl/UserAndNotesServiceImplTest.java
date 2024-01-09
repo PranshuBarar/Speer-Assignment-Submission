@@ -22,7 +22,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
-import static org.assertj.core.api.Assertions.assertThat;
 
 
 import java.util.ArrayList;
@@ -32,7 +31,7 @@ import java.util.Optional;
 //import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 
-import static org.assertj.core.api.Assertions.in;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.StatusResultMatchersExtensionsKt.isEqualTo;
 
@@ -133,14 +132,61 @@ class UserAndNotesServiceImplTest {
     }
 
     @Test
-    void getNoteById_IfCalledByAuthenticatedUser() {
-
+    void getNoteById_WhenUserIsOwner() throws Exception {
+        int noteId = 1;
+        UserEntity userEntity = createUserEntity(1,new ArrayList<>());
+        NoteEntity noteEntity = createNoteEntity(1,"Test Note",userEntity);
+        userEntity.getSelfNotesList().add(noteEntity);
+        when(userRepository.findById(1)).thenReturn(Optional.of(userEntity));
+        Object actualResult = userAndNotesServiceImpl.getNoteById(noteId);
+        assertThat(actualResult).isEqualTo(noteEntity);
     }
 
     @Test
-    void getNoteById_IfCalledByNonAuthenticatedUser() {
+    void getNoteById_WhenSharedWIthThisUser() throws Exception {
+        //Let's say that note is being asked for the noteId = 2
+        int noteId = 2;
+
+        //Now first of all we will create a two userEntities
+        UserEntity userEntity1 = createUserEntity(1,new ArrayList<>());
+        UserEntity userEntity2 = createUserEntity(2,new ArrayList<>());
+
+        //Now we will create a noteEntity with id = 2, which will be owned by userEntity2
+        NoteEntity noteEntity = createNoteEntity(2,"Test Note", userEntity2);
+        userEntity2.getSelfNotesList().add(noteEntity);
+
+        //Now we will create a sharedNote by which we will share the above noteEntity with userEntity1
+        //Mind it that this userEntity is actually owned by userEntity2 and our currently authenticated user
+        //is userEntity1
+        SharedNote sharedNote = createSharedNote(1,noteEntity,userEntity1);
+
+        //Now we will setup when and then conditions
+        when(userRepository.findById(1)).thenReturn(Optional.of(userEntity1));
+        when(sharedNoteRepository.findAll()).thenReturn(new ArrayList<>(List.of(new SharedNote[]{sharedNote})));
+
+        //Now as we see the note is being asked for noteId 2, which is shared with current user which is
+        //userEntity1.
+        // For this the expected result should be the above noteEntity
+        Object expectedResult = sharedNote;
+
+        //Now we will call the actual method
+        Object actualResult = userAndNotesServiceImpl.getNoteById(noteId);
+
+        //Now we will apply assertion
+        assertThat(actualResult).isEqualTo(expectedResult);
+
+        verify(userRepository, times(1)).findById(1);
+        verify(sharedNoteRepository, times(1)).findAll();
+    }
+
+    @Test
+    void getNoteById_WhenNeitherOwnedNorShared() {
 
     }
+
+
+
+
 
     @Test
     void updateNote() {
