@@ -17,6 +17,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -141,6 +142,9 @@ class UserAndNotesServiceImplTest {
         when(userRepository.findById(1)).thenReturn(Optional.of(userEntity));
         Object actualResult = userAndNotesServiceImpl.getNoteById(noteId);
         assertThat(actualResult).isEqualTo(noteEntity);
+
+        verify(userRepository, times(1)).findById(1);
+        verify(sharedNoteRepository, times(1)).findAll();
     }
 
     @Test
@@ -201,12 +205,72 @@ class UserAndNotesServiceImplTest {
     }
 
 
+    @Test
+    void updateNote_WhenUserIsOwner() throws Exception {
+        //Let's say that note is being asked for the update is noteId = 1
+        int noteId = 1;
+        String updatedNote = "Updated Test Note";
 
+        //Now first of all we will create a two userEntities
+        UserEntity userEntity = createUserEntity(1,new ArrayList<>());
 
+        //Now we will create a noteEntity with id = 1, which will be owned by userEntity
+        NoteEntity noteEntity = createNoteEntity(1,"Test Note", userEntity);
+        userEntity.getSelfNotesList().add(noteEntity);
+
+        //Now we will also create a noteEntityES with id = 1, which will be owned by userEntity with id 1
+        NoteEntityES noteEntityES = NoteEntityES
+                .builder()
+                .ownerId(1)
+                .noteMySqlId(1)
+                .note(noteEntity.getNote())
+                .build();
+
+        //Now we will setup when and then conditions
+        when(userRepository.findById(1)).thenReturn(Optional.of(userEntity));
+        when(noteRepositoryES.findByNoteMySqlId(1)).thenReturn(noteEntityES);
+
+        //Now we will call the actual method
+        String actualResult = userAndNotesServiceImpl.updateNote(updatedNote, noteId);
+
+        String expectedResult = "Note updated successfully";
+
+        assertThat(actualResult).isEqualTo(expectedResult);
+
+        verify(userRepository, times(1)).findById(1);
+        verify(noteRepositoryES, times(1)).findByNoteMySqlId(1);
+        verify(noteRepositoryES, times(1)).save(any(NoteEntityES.class));
+
+    }
 
     @Test
-    void updateNote() {
+    void updateNote_WhenUserIsNotAnOwner() {
+        //Let's say that note is being asked for the update is noteId = 1
+        int noteId = 2;
+        String updatedNote = "Updated Test Note";
 
+        //Now first of all we will create a two userEntities
+        UserEntity userEntity = createUserEntity(1,new ArrayList<>());
+
+        //Now we will create a noteEntity with id = 1, which will be owned by userEntity
+        NoteEntity noteEntity = createNoteEntity(1,"Test Note", userEntity);
+        userEntity.getSelfNotesList().add(noteEntity);
+
+        //Now we will also create a noteEntityES with id = 1, which will be owned by userEntity with id 1
+        NoteEntityES noteEntityES = NoteEntityES
+                .builder()
+                .ownerId(1)
+                .noteMySqlId(1)
+                .note(noteEntity.getNote())
+                .build();
+
+        //Now we will setup when and then conditions
+        when(userRepository.findById(1)).thenReturn(Optional.of(userEntity));
+        when(noteRepositoryES.findByNoteMySqlId(1)).thenReturn(noteEntityES);
+
+        assertThrows(AccessDeniedException.class, () -> userAndNotesServiceImpl.updateNote(updatedNote, noteId));
+
+        verify(userRepository, times(1)).findById(1);
     }
 
     @Test
