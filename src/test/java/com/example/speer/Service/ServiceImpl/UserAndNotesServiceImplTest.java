@@ -1,5 +1,6 @@
 package com.example.speer.Service.ServiceImpl;
 
+import com.example.speer.Entities.ElasticsearchDocuments.NoteEntityES;
 import com.example.speer.Entities.NoteEntity;
 import com.example.speer.Entities.SharedNote;
 import com.example.speer.Entities.UserEntity;
@@ -12,6 +13,8 @@ import com.example.speer.ResponseDTOs.SharedNoteDTO;
 import com.example.speer.config.CustomUserDetails;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -29,6 +32,7 @@ import java.util.Optional;
 //import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 
+import static org.assertj.core.api.Assertions.in;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.StatusResultMatchersExtensionsKt.isEqualTo;
 
@@ -107,13 +111,34 @@ class UserAndNotesServiceImplTest {
         assertThat(actualResult).containsExactlyInAnyOrderElementsOf(expectedResult);
     }
 
+
+    @ParameterizedTest
+    @ValueSource(strings = {"Note 1", "Note 2", "Note 3"})
+    void createNote(String inputNote) {
+        UserEntity userEntity = createUserEntity(1,new ArrayList<>());
+
+        when(userRepository.findById(1)).thenReturn(Optional.of(userEntity));
+
+        userEntity.getSelfNotesList().add(new NoteEntity(1,inputNote,userEntity));
+        when(userRepository.save(userEntity)).thenReturn(userEntity);
+
+        String actualResult = userAndNotesServiceImpl.createNote(inputNote);
+        String expectedResult = "Note successfully created";
+
+        assertThat(actualResult).isEqualTo(expectedResult);
+
+        verify(userRepository, times(1)).findById(1);
+        verify(userRepository, times(1)).save(any(UserEntity.class));
+        verify(noteRepositoryES, times(1)).save(any(NoteEntityES.class));
+    }
+
     @Test
-    void createNote() {
+    void getNoteById_IfCalledByAuthenticatedUser() {
 
     }
 
     @Test
-    void getNoteById() {
+    void getNoteById_IfCalledByNonAuthenticatedUser() {
 
     }
 
@@ -134,16 +159,6 @@ class UserAndNotesServiceImplTest {
 
     @Test
     void getNoteEntity() {
-
-    }
-
-    @Test
-    void getCurrentUserId() {
-
-    }
-
-    @Test
-    void getCurrentUserDetails() {
 
     }
 

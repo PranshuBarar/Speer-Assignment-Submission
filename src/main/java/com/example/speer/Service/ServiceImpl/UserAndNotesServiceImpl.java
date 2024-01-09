@@ -109,17 +109,8 @@ public class UserAndNotesServiceImpl implements UserAndNotesService {
         //UserEntity, due to cascading effect NoteEntity will automatically get saved
         UserEntity updateUserEntity = userRepository.save(userEntity);
         int listSize = updateUserEntity.getSelfNotesList().size();
-        int noteId;
-        if(listSize == 0) {
-            noteId = 1;
-        } else{
-            NoteEntity updatedNoteEntity = updateUserEntity.getSelfNotesList().get(listSize - 1);
-            noteId = updatedNoteEntity.getNoteId();
-        }
-
-
-
-        //Now we will save the noteEntityES in the Elasticsearch db
+        NoteEntity updatedNoteEntity = updateUserEntity.getSelfNotesList().get(listSize - 1);
+        int noteId = updatedNoteEntity.getNoteId();
         NoteEntityES noteEntityES = NoteEntityES.builder()
                 .note(note)
                 .ownerId(userEntity.getUserId())
