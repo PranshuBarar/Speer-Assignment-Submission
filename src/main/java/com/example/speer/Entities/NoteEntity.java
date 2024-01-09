@@ -23,7 +23,10 @@ public class NoteEntity {
 
     @ManyToOne
     @JoinColumn
-    @JsonIgnore
     UserEntity userEntity;
 
+    @Override
+    public String toString() {
+        return note;
+    }
 }

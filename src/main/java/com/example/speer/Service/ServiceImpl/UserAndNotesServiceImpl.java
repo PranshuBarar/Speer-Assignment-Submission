@@ -8,9 +8,13 @@ import com.example.speer.Repository.ESRepository.NoteRepositoryES;
 import com.example.speer.Repository.NoteRepository;
 import com.example.speer.Repository.SharedNoteRepository;
 import com.example.speer.Repository.UserRepository;
+import com.example.speer.ResponseDTOs.NoteEntityDTO;
+import com.example.speer.ResponseDTOs.SharedNoteDTO;
 import com.example.speer.Service.UserAndNotesService;
 import com.example.speer.config.CustomUserDetails;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,17 +45,37 @@ public class UserAndNotesServiceImpl implements UserAndNotesService {
     @Autowired
     SharedNoteRepository sharedNoteRepository;
 
+    public UserAndNotesServiceImpl(UserRepository userRepository, NoteRepository noteRepository, NoteRepositoryES noteRepositoryES, SharedNoteRepository sharedNoteRepository) {
+        this.userRepository = userRepository;
+        this.noteRepository = noteRepository;
+        this.noteRepositoryES = noteRepositoryES;
+        this.sharedNoteRepository = sharedNoteRepository;
+    }
+
     public List<Object> getAllNotes() throws EntityNotFoundException,SessionAuthenticationException  {
         //We will first have to find the current authenticated user
         int currentUserId = getCurrentUserId();
+
         Optional<UserEntity> optionalUserEntity = userRepository.findById(currentUserId);
         if(optionalUserEntity.isPresent()){
             UserEntity userEntity = optionalUserEntity.get();
 
-            List<NoteEntity> selfNotesList = userEntity.getSelfNotesList();
-            List<SharedNote> sharedNotesList = sharedNoteRepository.findAll()
+            List<NoteEntityDTO> selfNotesList = userEntity.getSelfNotesList()
+                    .stream()
+                    .map(note -> new NoteEntityDTO(
+                            note.getNoteId(),
+                            note.getNote(),
+                            note.getUserEntity().getUserId()))
+                    .toList();
+
+            List<SharedNoteDTO> sharedNotesList = sharedNoteRepository.findAll()
                     .stream()
                     .filter(note -> note.getSharedWithUser().getUserId() == currentUserId)
+                    .map(note -> new SharedNoteDTO(
+                            note.getSharedWithUser().getUserId(),
+                            note.getSharingTransactionId(),
+                            note.getNoteEntity().getNoteId(),
+                            note.getNoteEntity().getNote()))
                     .toList();
 
             List<Object> allNotes = new ArrayList<>(selfNotesList);

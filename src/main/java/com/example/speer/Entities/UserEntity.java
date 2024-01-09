@@ -29,6 +29,6 @@ public class UserEntity {
 
     @OneToMany(mappedBy ="userEntity", cascade = CascadeType.ALL)
     @JsonIgnore
-    private List<NoteEntity> SelfNotesList = new ArrayList<>();
+    private List<NoteEntity> selfNotesList = new ArrayList<>();
 
 }
