@@ -210,29 +210,9 @@ class UserAndNotesServiceImplTest {
         //Let's say that note is being asked for the update is noteId = 1
         int noteId = 1;
         String updatedNote = "Updated Test Note";
-
-        //Now first of all we will create a two userEntities
-        UserEntity userEntity = createUserEntity(1,new ArrayList<>());
-
-        //Now we will create a noteEntity with id = 1, which will be owned by userEntity
-        NoteEntity noteEntity = createNoteEntity(1,"Test Note", userEntity);
-        userEntity.getSelfNotesList().add(noteEntity);
-
-        //Now we will also create a noteEntityES with id = 1, which will be owned by userEntity with id 1
-        NoteEntityES noteEntityES = NoteEntityES
-                .builder()
-                .ownerId(1)
-                .noteMySqlId(1)
-                .note(noteEntity.getNote())
-                .build();
-
-        //Now we will setup when and then conditions
-        when(userRepository.findById(1)).thenReturn(Optional.of(userEntity));
-        when(noteRepositoryES.findByNoteMySqlId(1)).thenReturn(noteEntityES);
-
+        setUpUserAndNotes();
         //Now we will call the actual method
         String actualResult = userAndNotesServiceImpl.updateNote(updatedNote, noteId);
-
         String expectedResult = "Note updated successfully";
 
         assertThat(actualResult).isEqualTo(expectedResult);
@@ -250,23 +230,7 @@ class UserAndNotesServiceImplTest {
         String updatedNote = "Updated Test Note";
 
         //Now first of all we will create a two userEntities
-        UserEntity userEntity = createUserEntity(1,new ArrayList<>());
-
-        //Now we will create a noteEntity with id = 1, which will be owned by userEntity
-        NoteEntity noteEntity = createNoteEntity(1,"Test Note", userEntity);
-        userEntity.getSelfNotesList().add(noteEntity);
-
-        //Now we will also create a noteEntityES with id = 1, which will be owned by userEntity with id 1
-        NoteEntityES noteEntityES = NoteEntityES
-                .builder()
-                .ownerId(1)
-                .noteMySqlId(1)
-                .note(noteEntity.getNote())
-                .build();
-
-        //Now we will setup when and then conditions
-        when(userRepository.findById(1)).thenReturn(Optional.of(userEntity));
-        when(noteRepositoryES.findByNoteMySqlId(1)).thenReturn(noteEntityES);
+        setUpUserAndNotes();
 
         assertThrows(AccessDeniedException.class, () -> userAndNotesServiceImpl.updateNote(updatedNote, noteId));
 
@@ -274,19 +238,44 @@ class UserAndNotesServiceImplTest {
     }
 
     @Test
-    void deleteNote() {
+    void deleteNote_WhenUserIsOwnerOfTheNote() throws Exception {
+        int noteId = 1;
+
+        setUpUserAndNotes();
+
+        String expectedResult = "Note deleted successfully";
+        String actualResult = userAndNotesServiceImpl.deleteNote(noteId);
+
+        assertThat(actualResult).isEqualTo(expectedResult);
+
+        verify(userRepository, times(1)).findById(1);
+        verify(userRepository, times(1)).save(any(UserEntity.class));
+        verify(noteRepositoryES, times(1)).deleteByNoteMySqlId(noteId);
+        verify(noteRepository, times(1)).deleteById(noteId);
+    }
+
+    @Test
+    void deleteNote_WhenUserIsNotTheOwnerOfTheNote() {
+        int noteId = 2;
+
+        setUpUserAndNotes();
+
+        assertThrows(AccessDeniedException.class, () -> userAndNotesServiceImpl.deleteNote(noteId));
+
+        verify(userRepository, times(1)).findById(1);
 
     }
 
     @Test
-    void shareNote() {
+    void shareNote_WhenUserIsTheOwnerOfTheNote() {
 
     }
 
     @Test
-    void getNoteEntity() {
+    void shareNote_WhenUserIsNotTheOwnerOfTheNote() {
 
     }
+
 
     //================================================================================================================
     /*Private method to be called by the function of this class only*/
@@ -387,4 +376,26 @@ class UserAndNotesServiceImplTest {
                 .noteId(noteId)
                 .build();
     }
+
+    private void setUpUserAndNotes() {
+        //Now first of all we will create a two userEntities
+        UserEntity userEntity = createUserEntity(1,new ArrayList<>());
+
+        //Now we will create a noteEntity with id = 1, which will be owned by userEntity
+        NoteEntity noteEntity = createNoteEntity(1,"Test Note", userEntity);
+        userEntity.getSelfNotesList().add(noteEntity);
+
+        //Now we will also create a noteEntityES with id = 1, which will be owned by userEntity with id 1
+        NoteEntityES noteEntityES = NoteEntityES
+                .builder()
+                .ownerId(1)
+                .noteMySqlId(1)
+                .note(noteEntity.getNote())
+                .build();
+
+        //Now we will setup when and then conditions
+        when(userRepository.findById(1)).thenReturn(Optional.of(userEntity));
+        when(noteRepositoryES.findByNoteMySqlId(1)).thenReturn(noteEntityES);
+    }
+
 }
