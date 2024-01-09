@@ -26,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -267,12 +268,56 @@ class UserAndNotesServiceImplTest {
     }
 
     @Test
-    void shareNote_WhenUserIsTheOwnerOfTheNote() {
+    void shareNote_WhenUserIsTheOwnerOfTheNote() throws Exception {
+        int noteId = 1;
+        int recipientId = 2;
+        int currentUserId = 1;
+        //First we create two userEntities, one the present user and another the recipient user
+        UserEntity userEntity = createUserEntity(1,new ArrayList<>());
+        UserEntity recipientEntity = createUserEntity(2,new ArrayList<>());
 
+        //Now we will create a noteEntity with noteId 1 and will make userEntity as owner of the note
+        NoteEntity noteEntity = createNoteEntity(noteId,"Test Note", userEntity);
+        userEntity.getSelfNotesList().add(noteEntity);
+
+        when(userRepository.findById(currentUserId)).thenReturn(Optional.of(userEntity));
+        when(userRepository.findById(recipientId)).thenReturn(Optional.of(recipientEntity));
+        when(sharedNoteRepository.findByNoteEntity(noteEntity)).thenReturn(null);
+        when(noteRepositoryES.findByNoteMySqlId(noteId)).thenReturn(createNoteEntityES(noteId, currentUserId, noteEntity.getNote()));
+
+        String expectedResult = "Note successfully shared";
+        String actualResult = userAndNotesServiceImpl.shareNote(noteId,recipientId);
+
+        assertThat(actualResult).isEqualTo(expectedResult);
+
+
+        verify(userRepository, times(1)).findById(currentUserId);
+        verify(userRepository, times(1)).findById(recipientId);
+
+        verify(noteRepositoryES, times(1)).findByNoteMySqlId(noteId);
+        verify(noteRepositoryES, times(1)).save(any(NoteEntityES.class));
+
+        verify(sharedNoteRepository, times(1)).save(any(SharedNote.class));
+
+    }
+
+    private NoteEntityES createNoteEntityES(int noteId, int currentUserId, String note) {
+        return NoteEntityES
+                .builder()
+                .ownerId(currentUserId)
+                .noteMySqlId(noteId)
+                .note(note)
+                .sharedWithUsers(new HashSet<>())
+                .build();
     }
 
     @Test
     void shareNote_WhenUserIsNotTheOwnerOfTheNote() {
+
+    }
+
+    @Test
+    void shareNote_WhenNoteHasAlreadyBeenSharedWithRecipient() {
 
     }
 

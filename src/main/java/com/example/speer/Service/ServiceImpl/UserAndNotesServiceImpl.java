@@ -292,7 +292,7 @@ public class UserAndNotesServiceImpl implements UserAndNotesService {
             //================================================================
 
             /*
-            * If code reaches here it means note has not been shared with recipient
+            * If execution flow reaches here it means note has not been shared with recipient
             Hence now we will make a new entry in sharedNote table and share this note
             with the recipient
             *
