@@ -46,7 +46,7 @@ Make sure you have the following tools installed on your machine:
 - [Docker](https://docs.docker.com/get-docker/)
 - [Docker Compose](https://docs.docker.com/compose/install/)
 - [JDK 17 or higher](https://www.oracle.com/java/technologies/downloads/#java17)
-- [Maven](https://maven.apache.org/install.html)
+- [Maven 3.2.0](https://maven.apache.org/install.html)
 
 ## How to Run
 
