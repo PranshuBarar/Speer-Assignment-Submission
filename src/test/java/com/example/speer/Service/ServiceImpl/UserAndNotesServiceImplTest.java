@@ -30,13 +30,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
-//import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-
 
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.result.StatusResultMatchersExtensionsKt.isEqualTo;
 
 @SpringBootTest
 @Transactional
@@ -94,13 +91,11 @@ class UserAndNotesServiceImplTest {
         when(sharedNoteRepository.findAll()).thenReturn(new ArrayList<>());
 
         List<Object> expectedResult = new ArrayList<>();
-        expectedResult.add(noteEntity);
+        expectedResult.add(createNoteEntityDTO(noteEntity));
 
         List<Object> actualResult = userAndNotesServiceImpl.getAllNotes();
-        System.out.println("Krishna : " + actualResult);
-        System.out.println("Krishna : " + expectedResult);
 
-        assertThat(actualResult).containsExactly(expectedResult.toArray());
+        assertThat(actualResult).containsExactlyInAnyOrderElementsOf(expectedResult);
     }
 
     @Test
