@@ -1,12 +1,9 @@
-package com.example.speer.config;
+package com.example.speer.Controller;
 
 import com.example.speer.Entities.UserEntity;
 import com.example.speer.EntryDtos.UserEntryDto;
+import com.example.speer.config.*;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,17 +13,14 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
-
-import java.awt.print.Book;
 
 @Getter
 @Setter
 @RestController
 @RequestMapping("/api")
 @CrossOrigin
-public class JwtAuthenticationController {
+public class UserAuthenticationController {
     @Autowired
     private AuthenticationManager authenticationManager;
 

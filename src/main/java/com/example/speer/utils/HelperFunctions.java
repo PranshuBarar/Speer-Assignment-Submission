@@ -17,7 +17,7 @@ public class HelperFunctions {
                 "\"size\": 100,\n" +
                 "\"track_total_hits\": true,\n" +
                 "\"sort\" : {\n" +
-                "      \"noteMySqlId\": {\"order\": \"asc\"}\n" +
+                "      \"id\": {\"order\": \"asc\"}\n" +
                 "      },\n" +
                 "  \"query\": {\n" +
                 "    \"bool\": {\n" +

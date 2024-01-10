@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface NoteRepositoryES extends ElasticsearchRepository<NoteEntityES, Integer>{
-    NoteEntityES findByNoteMySqlId(int noteMySqlId);
+    NoteEntityES findById(int noteMySqlId);
 
-    void deleteByNoteMySqlId(int noteMySqlId);
+    void deleteById(int noteMySqlId);
 }

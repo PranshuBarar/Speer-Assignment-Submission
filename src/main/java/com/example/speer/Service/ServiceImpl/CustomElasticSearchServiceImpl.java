@@ -15,6 +15,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -32,6 +33,12 @@ public class CustomElasticSearchServiceImpl implements ElasticSearchService {
 
     @Autowired
     UserAndNotesServiceImpl userAndNotesServiceImpl;
+
+    public CustomElasticSearchServiceImpl(@Value("${api.elasticsearch.uri}") String elasticSearchUri,  @Value("${api.elasticsearch.search}")String elasticSearchSearchPrefix, UserAndNotesServiceImpl userAndNotesServiceImpl) {
+        this.elasticSearchUri = elasticSearchUri;
+        this.elasticSearchSearchPrefix = elasticSearchSearchPrefix;
+        this.userAndNotesServiceImpl = userAndNotesServiceImpl;
+    }
 
     @Override
     public CustomQuery searchQuery(String query) throws IOException {

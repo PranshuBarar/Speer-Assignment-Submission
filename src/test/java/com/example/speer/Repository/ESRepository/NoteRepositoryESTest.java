@@ -23,7 +23,7 @@ class NoteRepositoryESTest {
         NoteEntityES noteEntityES = NoteEntityES
                 .builder()
                 .note("This is a sample note")
-                .noteMySqlId(123)
+                .id(123)
                 .ownerId(456)
                 .build();
         noteRepositoryES.save(noteEntityES);
@@ -36,8 +36,8 @@ class NoteRepositoryESTest {
 
     @Test
     void findByNoteMySqlId() {
-        NoteEntityES noteEntityES = noteRepositoryES.findByNoteMySqlId(123);
-        int actualResult = noteEntityES.getNoteMySqlId();
+        NoteEntityES noteEntityES = noteRepositoryES.findById(123);
+        int actualResult = noteEntityES.getId();
         int expectedResult = 123;
 
         assertThat(actualResult).isEqualTo(expectedResult);
@@ -45,8 +45,8 @@ class NoteRepositoryESTest {
 
     @Test
     void deleteByNoteMySqlId() {
-        noteRepositoryES.deleteByNoteMySqlId(123);
-        NoteEntityES noteEntityES = noteRepositoryES.findByNoteMySqlId(123);
+        noteRepositoryES.deleteById(123);
+        NoteEntityES noteEntityES = noteRepositoryES.findById(123);
         assertThat(noteEntityES).isNull();
     }
 }

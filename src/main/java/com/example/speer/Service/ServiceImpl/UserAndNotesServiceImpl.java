@@ -13,10 +13,6 @@ import com.example.speer.ResponseDTOs.SharedNoteDTO;
 import com.example.speer.Service.UserAndNotesService;
 import com.example.speer.config.CustomUserDetails;
 import jakarta.persistence.EntityNotFoundException;
-import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
@@ -25,7 +21,6 @@ import org.springframework.security.web.authentication.session.SessionAuthentica
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.naming.AuthenticationException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -60,27 +55,36 @@ public class UserAndNotesServiceImpl implements UserAndNotesService {
         if(optionalUserEntity.isPresent()){
             UserEntity userEntity = optionalUserEntity.get();
 
-            List<NoteEntityDTO> selfNotesList = userEntity.getSelfNotesList()
-                    .stream()
-                    .map(note -> new NoteEntityDTO(
-                            note.getNoteId(),
-                            note.getNote(),
-                            note.getUserEntity().getUserId()))
-                    .toList();
+            List<Object> allNotes = new ArrayList<>();
 
-            List<SharedNoteDTO> sharedNotesList = sharedNoteRepository.findAll()
-                    .stream()
-                    .filter(note -> note.getSharedWithUser().getUserId() == currentUserId)
-                    .map(note -> new SharedNoteDTO(
-                            note.getSharedWithUser().getUserId(),
-                            note.getSharingTransactionId(),
-                            note.getNoteEntity().getNoteId(),
-                            note.getNoteEntity().getNote()))
-                    .toList();
+            List<NoteEntity> selfNotesList = userEntity.getSelfNotesList();
 
-            List<Object> allNotes = new ArrayList<>(selfNotesList);
-            allNotes.addAll(sharedNotesList);
+            if(!selfNotesList.isEmpty()){
+                List<NoteEntityDTO> selfNotesDTOList = selfNotesList
+                        .stream()
+                        .map(note -> new NoteEntityDTO(
+                                note.getNoteId(),
+                                note.getNote(),
+                                note.getUserEntity().getUserId()))
+                        .toList();
+                allNotes.addAll(selfNotesDTOList);
+            }
 
+
+            List<SharedNote> sharedNotesList = sharedNoteRepository.findAll();
+            List<SharedNoteDTO> sharedNoteDTOList;
+            if(!sharedNotesList.isEmpty()){
+                sharedNoteDTOList = sharedNotesList
+                        .stream()
+                        .filter(note -> note.getSharedWithUser().getUserId() == currentUserId)
+                        .map(note -> new SharedNoteDTO(
+                                note.getSharedWithUser().getUserId(),
+                                note.getSharingTransactionId(),
+                                note.getNoteEntity().getNoteId(),
+                                note.getNoteEntity().getNote()))
+                        .toList();
+                allNotes.addAll(sharedNoteDTOList);
+            }
             return allNotes;
 
         } else {
@@ -114,10 +118,10 @@ public class UserAndNotesServiceImpl implements UserAndNotesService {
         NoteEntityES noteEntityES = NoteEntityES.builder()
                 .note(note)
                 .ownerId(userEntity.getUserId())
-                .noteMySqlId(noteId)
+                .id(noteId)
                 .build();
 
-        noteRepositoryES.save(noteEntityES);
+        NoteEntityES noteEntityES1 = noteRepositoryES.save(noteEntityES);
 
         return "Note successfully created";
     }
@@ -174,7 +178,7 @@ public class UserAndNotesServiceImpl implements UserAndNotesService {
 
             //Here we are updating the note in ElasticSearch as well
             int noteMySqlId = matchingNote.getNoteId();
-            NoteEntityES noteEntityES = noteRepositoryES.findByNoteMySqlId(noteMySqlId);
+            NoteEntityES noteEntityES = noteRepositoryES.findById(noteMySqlId);
             noteEntityES.setNote(note);
             noteRepositoryES.save(noteEntityES);
 
@@ -215,7 +219,7 @@ public class UserAndNotesServiceImpl implements UserAndNotesService {
             noteRepository.deleteById(noteId);
 
             // Delete from Elasticsearch also
-            noteRepositoryES.deleteByNoteMySqlId(matchingNote.getNoteId());
+            noteRepositoryES.deleteById(matchingNote.getNoteId());
 
             return "Note deleted successfully";
         }
@@ -309,7 +313,7 @@ public class UserAndNotesServiceImpl implements UserAndNotesService {
 
             //================================================================
             //Also update the information in Elasticsearch
-            NoteEntityES noteEntityES = noteRepositoryES.findByNoteMySqlId(noteId);
+            NoteEntityES noteEntityES = noteRepositoryES.findById(noteId);
             noteEntityES.getSharedWithUsers().add(recipientId);
 
             noteRepositoryES.save(noteEntityES);

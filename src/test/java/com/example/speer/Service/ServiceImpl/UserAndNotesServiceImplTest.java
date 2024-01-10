@@ -25,7 +25,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 
 
-import javax.annotation.meta.When;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -243,7 +242,7 @@ class UserAndNotesServiceImplTest {
         assertThat(actualResult).isEqualTo(expectedResult);
 
         verify(userRepository, times(1)).findById(1);
-        verify(noteRepositoryES, times(1)).findByNoteMySqlId(1);
+        verify(noteRepositoryES, times(1)).findById(1);
         verify(noteRepositoryES, times(1)).save(any(NoteEntityES.class));
 
     }
@@ -282,7 +281,7 @@ class UserAndNotesServiceImplTest {
 
         verify(userRepository, times(1)).findById(1);
         verify(userRepository, times(1)).save(any(UserEntity.class));
-        verify(noteRepositoryES, times(1)).deleteByNoteMySqlId(noteId);
+        verify(noteRepositoryES, times(1)).deleteById(noteId);
         verify(noteRepository, times(1)).deleteById(noteId);
     }
 
@@ -324,7 +323,7 @@ class UserAndNotesServiceImplTest {
         when(userRepository.findById(currentUserId)).thenReturn(Optional.of(userEntity));
         when(userRepository.findById(recipientId)).thenReturn(Optional.of(recipientEntity));
         when(sharedNoteRepository.findByNoteEntity(noteEntity)).thenReturn(null);
-        when(noteRepositoryES.findByNoteMySqlId(noteId)).thenReturn(createNoteEntityES(noteId, currentUserId, noteEntity.getNote()));
+        when(noteRepositoryES.findById(noteId)).thenReturn(createNoteEntityES(noteId, currentUserId, noteEntity.getNote()));
 
         String expectedResult = "Note successfully shared";
         String actualResult = userAndNotesServiceImpl.shareNote(noteId,recipientId);
@@ -335,7 +334,7 @@ class UserAndNotesServiceImplTest {
         verify(userRepository, times(1)).findById(currentUserId);
         verify(userRepository, times(1)).findById(recipientId);
 
-        verify(noteRepositoryES, times(1)).findByNoteMySqlId(noteId);
+        verify(noteRepositoryES, times(1)).findById(noteId);
         verify(noteRepositoryES, times(1)).save(any(NoteEntityES.class));
 
         verify(sharedNoteRepository, times(1)).save(any(SharedNote.class));
@@ -395,14 +394,6 @@ class UserAndNotesServiceImplTest {
     //================================================================================================================
     //================================================================================================================
 
-
-
-
-
-
-
-
-
     //================================================================================================================
     //================================================================================================================
     //Below are the private helper methods to be called by the methods of this class only
@@ -461,7 +452,7 @@ class UserAndNotesServiceImplTest {
         List<Object> result = new ArrayList<>();
         int sharingTransactionId = 1;
         for (SharedNote sharedNote : sharedNotes) {
-            result.add(createSharedNoteDTO(sharingTransactionId,sharedNote.getSharedWithUser(), sharedNote));
+            result.add(createSharedNoteDTO(sharingTransactionId, sharedNote.getSharedWithUser(), sharedNote));
             sharingTransactionId++;
         }
         for (NoteEntity noteEntity : selfNotes) {
@@ -508,23 +499,23 @@ class UserAndNotesServiceImplTest {
 
     private void setUpUserAndNotes() {
         //Now first of all we will create a two userEntities
-        UserEntity userEntity = createUserEntity(1,new ArrayList<>());
+        UserEntity userEntity = createUserEntity(1, new ArrayList<>());
 
         //Now we will create a noteEntity with id = 1, which will be owned by userEntity
-        NoteEntity noteEntity = createNoteEntity(1,"Test Note", userEntity);
+        NoteEntity noteEntity = createNoteEntity(1, "Test Note", userEntity);
         userEntity.getSelfNotesList().add(noteEntity);
 
         //Now we will also create a noteEntityES with id = 1, which will be owned by userEntity with id 1
         NoteEntityES noteEntityES = NoteEntityES
                 .builder()
                 .ownerId(1)
-                .noteMySqlId(1)
+                .id(1)
                 .note(noteEntity.getNote())
                 .build();
 
         //Now we will setup when and then conditions
         when(userRepository.findById(1)).thenReturn(Optional.of(userEntity));
-        when(noteRepositoryES.findByNoteMySqlId(1)).thenReturn(noteEntityES);
+        when(noteRepositoryES.findById(1)).thenReturn(noteEntityES);
     }
 
 
@@ -532,9 +523,11 @@ class UserAndNotesServiceImplTest {
         return NoteEntityES
                 .builder()
                 .ownerId(currentUserId)
-                .noteMySqlId(noteId)
+                .id(noteId)
                 .note(note)
                 .sharedWithUsers(new HashSet<>())
                 .build();
     }
+
+
 }

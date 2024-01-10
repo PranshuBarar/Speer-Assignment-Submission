@@ -1,15 +1,14 @@
 package com.example.speer.Entities.ElasticsearchDocuments;
 
-import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
 
 @Data
 @AllArgsConstructor
@@ -19,11 +18,9 @@ import java.util.UUID;
 public class NoteEntityES {
 
     @Id
-    private String id = UUID.randomUUID().toString();
+    private int id;
 
     private String note;
-
-    private int noteMySqlId;
 
     private int ownerId;
 
