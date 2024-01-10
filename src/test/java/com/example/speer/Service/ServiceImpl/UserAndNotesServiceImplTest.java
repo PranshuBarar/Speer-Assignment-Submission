@@ -38,8 +38,6 @@ import static org.mockito.Mockito.*;
 
 @SpringBootTest
 @Transactional
-//@WithMockUser(username = "user@example.com")
-//@WithUserDetails("user@example.com")
 class UserAndNotesServiceImplTest {
 
     @Mock
@@ -410,7 +408,6 @@ class UserAndNotesServiceImplTest {
     //Below are the private helper methods to be called by the methods of this class only
     //================================================================================================================
     //================================================================================================================
-    /*Private method to be called by the function of this class only*/
     private UserEntity createUserEntity(int userId, List<NoteEntity> selfNotesList) {
         return UserEntity
                 .builder()
