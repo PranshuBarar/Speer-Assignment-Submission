@@ -25,6 +25,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 
 
+import javax.annotation.meta.When;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -56,6 +57,8 @@ class UserAndNotesServiceImplTest {
 
     private UserAndNotesServiceImpl userAndNotesServiceImpl;
 
+    //================================================================================================================
+
     @BeforeEach
     void setUp() {
          this.userAndNotesServiceImpl = new UserAndNotesServiceImpl(userRepository,noteRepository,noteRepositoryES,sharedNoteRepository);
@@ -70,6 +73,12 @@ class UserAndNotesServiceImplTest {
     }
 
 
+    /*Testing getAllNotes() with three test cases:
+    * 1-Empty self and empty shared notes
+    * 2-Non-Empty self and empty shared notes
+    * 3-Non-Empty self and non-empty shared notes*/
+    //================================================================================================================
+    //================================================================================================================
     @Test
     void getAllNotes_EmptySelfAndSharedNotes() {
         UserEntity userEntity = createUserEntity(1,new ArrayList<>());
@@ -109,8 +118,13 @@ class UserAndNotesServiceImplTest {
         // Assert that the expectedResult is same as the actualResult
         assertThat(actualResult).containsExactlyInAnyOrderElementsOf(expectedResult);
     }
+    //================================================================================================================
+    //================================================================================================================
 
 
+    /*Testing createNote()*/
+    //================================================================================================================
+    //================================================================================================================
     @ParameterizedTest
     @ValueSource(strings = {"Note 1", "Note 2", "Note 3"})
     void createNote(String inputNote) {
@@ -130,7 +144,16 @@ class UserAndNotesServiceImplTest {
         verify(userRepository, times(1)).save(any(UserEntity.class));
         verify(noteRepositoryES, times(1)).save(any(NoteEntityES.class));
     }
+    //================================================================================================================
+    //================================================================================================================
 
+
+    /*Testing getNoteById() with three test cases:
+    * 1-When the user is owner of the note
+    * 2-When user is note the owner but the note is shared with the use
+    * 3-When neither the note has been shared nor the user owns it*/
+    //================================================================================================================
+    //================================================================================================================
     @Test
     void getNoteById_WhenUserIsOwner() throws Exception {
         int noteId = 1;
@@ -200,8 +223,15 @@ class UserAndNotesServiceImplTest {
 
         assertThrows(IllegalAccessException.class, () -> userAndNotesServiceImpl.getNoteById(noteId));
     }
+    //================================================================================================================
+    //================================================================================================================
 
 
+    /*Testing updateNote() with two test cases:
+    * 1-When the user is the owner of note
+    * 2-When user is not the owner of the note*/
+    //================================================================================================================
+    //================================================================================================================
     @Test
     void updateNote_WhenUserIsOwner() throws Exception {
         //Let's say that note is being asked for the update is noteId = 1
@@ -233,7 +263,14 @@ class UserAndNotesServiceImplTest {
 
         verify(userRepository, times(1)).findById(1);
     }
+    //================================================================================================================
+    //================================================================================================================
 
+    /*Testing deleteNote() with two test cases:
+    * 1-When user is the owner of note
+    * 2-When user is not the owner of the note*/
+    //================================================================================================================
+    //================================================================================================================
     @Test
     void deleteNote_WhenUserIsOwnerOfTheNote() throws Exception {
         int noteId = 1;
@@ -262,7 +299,17 @@ class UserAndNotesServiceImplTest {
         verify(userRepository, times(1)).findById(1);
 
     }
+    //================================================================================================================
+    //================================================================================================================
 
+
+
+    //Testing shareNote() with two test cases:
+    //1-When the user is owner of the note
+    //2-When the user is not owner of the note
+    //3-When the note has already been shared with user
+    //================================================================================================================
+    //================================================================================================================
     @Test
     void shareNote_WhenUserIsTheOwnerOfTheNote() throws Exception {
         int noteId = 1;
@@ -296,16 +343,6 @@ class UserAndNotesServiceImplTest {
         verify(sharedNoteRepository, times(1)).save(any(SharedNote.class));
         verify(sharedNoteRepository, times(1)).findByNoteEntity(noteEntity);
 
-    }
-
-    private NoteEntityES createNoteEntityES(int noteId, int currentUserId, String note) {
-        return NoteEntityES
-                .builder()
-                .ownerId(currentUserId)
-                .noteMySqlId(noteId)
-                .note(note)
-                .sharedWithUsers(new HashSet<>())
-                .build();
     }
 
     @Test
@@ -357,8 +394,21 @@ class UserAndNotesServiceImplTest {
         verify(userRepository, times(1)).findById(recipientId);
         verify(sharedNoteRepository, times(1)).findByNoteEntity(noteEntity);
     }
+    //================================================================================================================
+    //================================================================================================================
 
 
+
+
+
+
+
+
+
+    //================================================================================================================
+    //================================================================================================================
+    //Below are the private helper methods to be called by the methods of this class only
+    //================================================================================================================
     //================================================================================================================
     /*Private method to be called by the function of this class only*/
     private UserEntity createUserEntity(int userId, List<NoteEntity> selfNotesList) {
@@ -480,4 +530,14 @@ class UserAndNotesServiceImplTest {
         when(noteRepositoryES.findByNoteMySqlId(1)).thenReturn(noteEntityES);
     }
 
+
+    private NoteEntityES createNoteEntityES(int noteId, int currentUserId, String note) {
+        return NoteEntityES
+                .builder()
+                .ownerId(currentUserId)
+                .noteMySqlId(noteId)
+                .note(note)
+                .sharedWithUsers(new HashSet<>())
+                .build();
+    }
 }
