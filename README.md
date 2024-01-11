@@ -83,7 +83,7 @@ Make sure you have the following tools installed on your machine:
 
 - If you encounter any issues, ensure that ports 8080, 3306, and 9200 are available on your machine.
 
-- Customize your application configuration in the respective `application.properties` or `application.yml` files if you require doing so.
+- Customize your application configuration in the `application.properties` files if you require doing so.
 
 - You are most welcome to explore other available endpoints and functionalities as documented in the project.
 

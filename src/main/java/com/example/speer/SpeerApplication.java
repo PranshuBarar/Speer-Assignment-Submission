@@ -12,5 +12,4 @@ public class SpeerApplication {
 		System.setProperty("server.servlet.context-path", "/springboot3");
 		SpringApplication.run(SpeerApplication.class, args);
 	}
-
 }
