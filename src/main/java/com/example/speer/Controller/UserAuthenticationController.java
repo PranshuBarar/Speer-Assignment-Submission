@@ -38,7 +38,7 @@ public class UserAuthenticationController {
         authenticate(userEmail, password);
         //If no exception thrown after running authenticate(), it means request is authenticated
 
-        final CustomUserDetails customUserDetails = (CustomUserDetails) jwtUserDetailsServiceImpl.loadUserByUsername(userEmail);
+        final CustomUserDetails customUserDetails = jwtUserDetailsServiceImpl.loadUserByUsername(userEmail);
         final String token = jwtTokenUtil.generateToken(customUserDetails);
         return ResponseEntity.ok(new JwtResponse(token));
     }

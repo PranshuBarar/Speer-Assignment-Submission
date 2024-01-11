@@ -40,6 +40,7 @@ public class UserAndNotesServiceImpl implements UserAndNotesService {
     @Autowired
     SharedNoteRepository sharedNoteRepository;
 
+    /*This constructor has been made here as it is specifically required in UserAndNotesServiceImplTest class*/
     public UserAndNotesServiceImpl(UserRepository userRepository, NoteRepository noteRepository, NoteRepositoryES noteRepositoryES, SharedNoteRepository sharedNoteRepository) {
         this.userRepository = userRepository;
         this.noteRepository = noteRepository;
@@ -48,17 +49,32 @@ public class UserAndNotesServiceImpl implements UserAndNotesService {
     }
 
     public List<Object> getAllNotes() throws EntityNotFoundException,SessionAuthenticationException  {
+
+        /*
+            The process for getting all notes is like this:
+            1-First we will fetch the current authenticated user entity
+            2-Retrieve all the self notes (notes owned by the user)
+            3-Convert them into DTO and fill them in an empty array list
+            4-Retrieve all the shared notes (notes shared with the user by some other user)
+            5-Convert them into DTO and add them in the same arraylist
+            6-Return the list
+        */
+
+
         //We will first have to find the current authenticated user
         int currentUserId = getCurrentUserId();
-
+        //We will fetch the userEntity for this userId
         Optional<UserEntity> optionalUserEntity = userRepository.findById(currentUserId);
         if(optionalUserEntity.isPresent()){
             UserEntity userEntity = optionalUserEntity.get();
 
+            //We will initialize an empty arraylist which will be return afterwords
             List<Object> allNotes = new ArrayList<>();
 
+            //We will fetch the note entities of this user
             List<NoteEntity> selfNotesList = userEntity.getSelfNotesList();
 
+            //If the above list is not empty will convert it into DTO and add in the arraylist to be returned
             if(!selfNotesList.isEmpty()){
                 List<NoteEntityDTO> selfNotesDTOList = selfNotesList
                         .stream()
@@ -70,8 +86,10 @@ public class UserAndNotesServiceImpl implements UserAndNotesService {
                 allNotes.addAll(selfNotesDTOList);
             }
 
-
+            //Now we will fetch all the sharedNotes
             List<SharedNote> sharedNotesList = sharedNoteRepository.findAll();
+
+            //If the above list is not empty will convert it into DTO and add in the arraylist to be returned
             List<SharedNoteDTO> sharedNoteDTOList;
             if(!sharedNotesList.isEmpty()){
                 sharedNoteDTOList = sharedNotesList
@@ -85,6 +103,8 @@ public class UserAndNotesServiceImpl implements UserAndNotesService {
                         .toList();
                 allNotes.addAll(sharedNoteDTOList);
             }
+
+            //We will return the arraylist
             return allNotes;
 
         } else {
@@ -121,21 +141,26 @@ public class UserAndNotesServiceImpl implements UserAndNotesService {
                 .id(noteId)
                 .build();
 
-        NoteEntityES noteEntityES1 = noteRepositoryES.save(noteEntityES);
+        //We will also save the created note in the Elasticsearch database
+        noteRepositoryES.save(noteEntityES);
 
+        //Return the response
         return "Note successfully created";
     }
-
-
-
 
     //============================================================================================
     //============================================================================================
     public Object getNoteById(int noteId) throws Exception {
+        //we will get the current authenticated user Id
         int currentUserId = getCurrentUserId();
+
+        //Find the userEntity for that userId from the userRepository
         Optional<UserEntity> optionalUserEntity = userRepository.findById(currentUserId);
+
         if(optionalUserEntity.isPresent()) {
             UserEntity userEntity = optionalUserEntity.get();
+
+            //We will fetch the note with asked noteId
             NoteEntity noteEntity = userEntity
                     .getSelfNotesList()
                     .stream()
@@ -146,6 +171,10 @@ public class UserAndNotesServiceImpl implements UserAndNotesService {
             if(noteEntity != null){
                 return noteEntity;
             }
+
+            //If the execution flow reaches here it means note is not owned by the user
+            //Now we will check whether the note has been shared by someone to this user
+            //If yes then we will return that
             else {
                 SharedNote sharedNote = sharedNoteRepository
                         .findAll()
@@ -153,6 +182,8 @@ public class UserAndNotesServiceImpl implements UserAndNotesService {
                         .filter(note -> note.getSharedWithUser().getUserId() == currentUserId)
                         .findFirst()
                         .orElse(null);
+
+                //Now if still sharedNote is null, it means neither the note owned by this user nor shared
                 if(sharedNote == null){
                     throw new IllegalAccessException("We are sorry, neither you are owner, nor this note is shared with you by any user");
                 }
@@ -162,12 +193,19 @@ public class UserAndNotesServiceImpl implements UserAndNotesService {
         throw new IllegalAccessException("You are not authenticated");
     }
     public String updateNote(String note, int noteId) throws Exception {
+        //we will get the current authenticated user Id
         int currentUserId = getCurrentUserId();
+
+        //Find the userEntity for that userId from the userRepository
         Optional<UserEntity> optionalUserEntity = userRepository.findById(currentUserId);
+
         if(optionalUserEntity.isPresent()) {
             UserEntity userEntity = optionalUserEntity.get();
+
+            //We find the note with given noteId
             NoteEntity matchingNote = getNoteEntity(noteId, userEntity);
 
+            //If note has not been found, it means the note is not owned by this user
             if(matchingNote == null){
                 throw new AccessDeniedException("You are not allowed to modify as you are not the owner of this note");
             }
@@ -181,7 +219,6 @@ public class UserAndNotesServiceImpl implements UserAndNotesService {
             NoteEntityES noteEntityES = noteRepositoryES.findById(noteMySqlId);
             noteEntityES.setNote(note);
             noteRepositoryES.save(noteEntityES);
-
 
             return "Note updated successfully";
         }
@@ -328,7 +365,8 @@ public class UserAndNotesServiceImpl implements UserAndNotesService {
     }
 
     //============================================================================================
-    //These are helper methods for the above methods
+    //These are helper methods for the above methods. These can be kept private also but as these functions are
+    //also being called by CustomElasticSearchServiceImpl class hence, I have kept them public
     //============================================================================================
 
     public static NoteEntity getNoteEntity(int noteId, UserEntity userEntity) {
