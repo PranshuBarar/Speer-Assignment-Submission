@@ -12,7 +12,9 @@ import com.example.speer.utils.CustomQuery;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -32,6 +34,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Transactional
 class CustomElasticSearchServiceImplTest {
 
+    /**
+     * This test requires a real Elasticsearch database to be set up prior to testing,
+     * as these tests interact with the Elasticsearch database using HTTP URIs.
+     */
 
     @Mock
     UserRepository userRepository;

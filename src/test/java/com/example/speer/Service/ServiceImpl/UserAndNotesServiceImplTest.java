@@ -13,9 +13,12 @@ import com.example.speer.ResponseDTOs.SharedNoteDTO;
 import com.example.speer.config.CustomUserDetails;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -35,8 +38,9 @@ import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
-@SpringBootTest
+//@SpringBootTest
 @Transactional
+@ExtendWith(MockitoExtension.class)
 class UserAndNotesServiceImplTest {
 
     @Mock
@@ -515,7 +519,7 @@ class UserAndNotesServiceImplTest {
 
         //Now we will setup when and then conditions
         when(userRepository.findById(1)).thenReturn(Optional.of(userEntity));
-        when(noteRepositoryES.findById(1)).thenReturn(noteEntityES);
+        lenient().when(noteRepositoryES.findById(1)).thenReturn(noteEntityES);
     }
 
 
@@ -528,6 +532,4 @@ class UserAndNotesServiceImplTest {
                 .sharedWithUsers(new HashSet<>())
                 .build();
     }
-
-
 }

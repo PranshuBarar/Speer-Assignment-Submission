@@ -35,7 +35,7 @@ class NoteRepositoryESTest {
     }
 
     @Test
-    void findByNoteMySqlId() {
+    void findById() {
         NoteEntityES noteEntityES = noteRepositoryES.findById(123);
         int actualResult = noteEntityES.getId();
         int expectedResult = 123;
@@ -44,7 +44,7 @@ class NoteRepositoryESTest {
     }
 
     @Test
-    void deleteByNoteMySqlId() {
+    void deleteById() {
         noteRepositoryES.deleteById(123);
         NoteEntityES noteEntityES = noteRepositoryES.findById(123);
         assertThat(noteEntityES).isNull();
