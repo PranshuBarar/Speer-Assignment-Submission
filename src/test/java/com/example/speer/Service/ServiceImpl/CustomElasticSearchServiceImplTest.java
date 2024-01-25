@@ -125,22 +125,17 @@ class CustomElasticSearchServiceImplTest {
         for(NoteEntity noteEntity : noteEntityListForUser1) {
             NoteEntityES noteEntityES = convertNoteEntityToNoteEntityES(noteEntity);
             NoteEntityES noteEntityES1 = noteRepositoryES.save(noteEntityES);
-            System.out.println("Krishna " + noteEntityES1.getNote());
         }
 
         for(NoteEntity noteEntity : noteEntityListForUser2) {
             NoteEntityES noteEntityES = convertNoteEntityToNoteEntityES(noteEntity);
             NoteEntityES noteEntityES1 = noteRepositoryES.save(noteEntityES);
-            System.out.println("Krishna " + noteEntityES1.getNote());
         }
 
 
         String expectedResult = "[Everybody must be a scientist]";
 
         CustomQuery actualSearchResult = customElasticSearchServiceImpl.searchQuery("scien");
-        System.out.println("Krishna " + actualSearchResult.getElements());
-        System.out.println("Krishna " + actualSearchResult.getNumberOfResults());
-        System.out.println("Krishna " + actualSearchResult.getTimeTook());
 
         String actualResult = actualSearchResult.getElements();
 
